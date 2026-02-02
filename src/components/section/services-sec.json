@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_section_services_secs",
+  "info": {
+    "displayName": "services_sec"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "imgcards": {
+      "type": "component",
+      "component": "element.imgcard",
+      "repeatable": true
+    },
+    "bottomPara": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_yourbrandyourstrategies",
+  "info": {
+    "displayName": "yourbrandyourstrategy"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "component": "element.card1",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

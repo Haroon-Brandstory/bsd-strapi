@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_section_accordion1s",
+  "info": {
+    "displayName": "accordion1"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "accordion": {
+      "type": "component",
+      "component": "element.accordion",
+      "repeatable": true
+    },
+    "bottomPara": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

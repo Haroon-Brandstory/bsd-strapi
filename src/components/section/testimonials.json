@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_testimonials",
+  "info": {
+    "displayName": "testimonials"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "testimonials": {
+      "type": "component",
+      "component": "element.testimonials",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

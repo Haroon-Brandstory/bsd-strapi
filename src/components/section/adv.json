@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_section_advs",
+  "info": {
+    "displayName": "adv"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "button1Label": {
+      "type": "string"
+    },
+    "button1Url": {
+      "type": "string"
+    },
+    "button2Label": {
+      "type": "string"
+    },
+    "button2Url": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_horizontaltabs",
+  "info": {
+    "displayName": "horizontaltab"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "tabs": {
+      "type": "component",
+      "component": "element.tabs",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

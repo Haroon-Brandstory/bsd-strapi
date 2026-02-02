@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_element_imgcards",
+  "info": {
+    "displayName": "imgcard"
+  },
+  "options": {},
+  "attributes": {
+    "img": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

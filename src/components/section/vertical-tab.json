@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_section_vertical_tabs",
+  "info": {
+    "displayName": "verticalTab"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "tabs": {
+      "type": "component",
+      "component": "element.tabs",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_element_card1s",
+  "info": {
+    "displayName": "card1"
+  },
+  "options": {},
+  "attributes": {
+    "img": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "bgcolor": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

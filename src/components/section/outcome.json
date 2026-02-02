@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_section_outcomes",
+  "info": {
+    "displayName": "outcome"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "card": {
+      "type": "component",
+      "component": "element.card",
+      "repeatable": true
+    },
+    "bottomPara": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

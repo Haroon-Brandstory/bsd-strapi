@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_section_casestudies",
+  "info": {
+    "displayName": "casestudy"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "casestudyCard": {
+      "type": "component",
+      "component": "element.casestudy-card",
+      "repeatable": true
+    },
+    "bottomPara": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

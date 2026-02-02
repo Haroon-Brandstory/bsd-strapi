@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_element_casestudy_cards",
+  "info": {
+    "displayName": "casestudyCard"
+  },
+  "options": {},
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "goal": {
+      "type": "string"
+    },
+    "solution": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
