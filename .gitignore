@@ -121,6 +121,7 @@ coverage
 # Strapi
 ############################
 
+postgres.backup
 .env
 license.txt
 exports
