@@ -17,6 +17,29 @@
     "pageSlug": {
       "type": "uid"
     },
+    "seotitle": {
+      "type": "string"
+    },
+    "seodescription": {
+      "type": "string"
+    },
+    "childPage": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::landing-page.landing-page",
+      "inversedBy": "parent_page"
+    },
+    "parent_page": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::landing-page.landing-page",
+      "mappedBy": "childPage"
+    },
+    "fullPath": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
     "sections": {
       "type": "dynamiczone",
       "components": [
@@ -34,12 +57,6 @@
         "section.horizontaltab",
         "section.adv"
       ]
-    },
-    "seotitle": {
-      "type": "string"
-    },
-    "seodescription": {
-      "type": "string"
     }
   }
 }
