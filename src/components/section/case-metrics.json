@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_section_case_metrics",
+  "info": {
+    "displayName": "caseMetrics"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "points": {
+      "type": "component",
+      "component": "element.metric-points",
+      "repeatable": true
+    },
+    "metric": {
+      "type": "component",
+      "component": "element.case-metric-values",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

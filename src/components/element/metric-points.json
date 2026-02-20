@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_metric_points",
+  "info": {
+    "displayName": "metricPoints"
+  },
+  "options": {},
+  "attributes": {
+    "point": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

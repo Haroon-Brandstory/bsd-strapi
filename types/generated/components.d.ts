@@ -11,6 +11,18 @@ export interface ElementAccordion extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementApproachCards extends Struct.ComponentSchema {
+  collectionName: 'components_element_approach_cards';
+  info: {
+    displayName: 'approachCards';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    imageNum: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface ElementButton extends Struct.ComponentSchema {
   collectionName: 'components_element_buttons';
   info: {
@@ -43,6 +55,42 @@ export interface ElementCard1 extends Struct.ComponentSchema {
     img: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     para: Schema.Attribute.Blocks;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface ElementCaseBannerTraffic extends Struct.ComponentSchema {
+  collectionName: 'components_element_case_banner_traffics';
+  info: {
+    displayName: 'caseBannerTraffic';
+  };
+  attributes: {
+    desc: Schema.Attribute.String;
+    trafficNum: Schema.Attribute.String;
+  };
+}
+
+export interface ElementCaseChallengeCards extends Struct.ComponentSchema {
+  collectionName: 'components_element_case_challenge_cards';
+  info: {
+    displayName: 'caseChallengeCards';
+  };
+  attributes: {
+    csChallenge: Schema.Attribute.String;
+    csResolution: Schema.Attribute.String;
+    csResult: Schema.Attribute.String;
+    numImg: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+  };
+}
+
+export interface ElementCaseMetricValues extends Struct.ComponentSchema {
+  collectionName: 'components_element_case_metric_values';
+  info: {
+    displayName: 'caseMetricValues';
+  };
+  attributes: {
+    caseMetric: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    metricValue: Schema.Attribute.String;
   };
 }
 
@@ -80,6 +128,27 @@ export interface ElementImgcard extends Struct.ComponentSchema {
     img: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     para: Schema.Attribute.Blocks;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface ElementMetricPoints extends Struct.ComponentSchema {
+  collectionName: 'components_element_metric_points';
+  info: {
+    displayName: 'metricPoints';
+  };
+  attributes: {
+    point: Schema.Attribute.String;
+  };
+}
+
+export interface ElementResultImpact extends Struct.ComponentSchema {
+  collectionName: 'components_element_result_impacts';
+  info: {
+    displayName: 'resultImpact';
+  };
+  attributes: {
+    impactDesc: Schema.Attribute.String;
+    impactPerc: Schema.Attribute.String;
   };
 }
 
@@ -161,6 +230,108 @@ export interface SectionBanner extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionCaseApproach extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_approaches';
+  info: {
+    displayName: 'caseApproach';
+  };
+  attributes: {
+    card: Schema.Attribute.Component<'element.approach-cards', true>;
+    description: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseBanner extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_banners';
+  info: {
+    displayName: 'caseBanner';
+  };
+  attributes: {
+    bannerPara: Schema.Attribute.Blocks;
+    bannerTraffic: Schema.Attribute.Component<
+      'element.case-banner-traffic',
+      true
+    >;
+    businessModel: Schema.Attribute.String;
+    industry: Schema.Attribute.String;
+    marketGeo: Schema.Attribute.String;
+    servicesDelivered: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseChallenge extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_challenges';
+  info: {
+    displayName: 'caseChallenge';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseImageSlider extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_image_sliders';
+  info: {
+    displayName: 'caseImageSlider';
+  };
+  attributes: {
+    images: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
+  };
+}
+
+export interface SectionCaseImplementation extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_implementations';
+  info: {
+    displayName: 'caseImplementation';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseMetrics extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_metrics';
+  info: {
+    displayName: 'caseMetrics';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    metric: Schema.Attribute.Component<'element.case-metric-values', true>;
+    points: Schema.Attribute.Component<'element.metric-points', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseResolution extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_resolutions';
+  info: {
+    displayName: 'caseResolution';
+  };
+  attributes: {
+    csCards: Schema.Attribute.Component<'element.case-challenge-cards', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCaseResults extends Struct.ComponentSchema {
+  collectionName: 'components_section_case_results';
+  info: {
+    displayName: 'caseResults';
+  };
+  attributes: {
+    impactCards: Schema.Attribute.Component<'element.result-impact', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface SectionCasestudy extends Struct.ComponentSchema {
   collectionName: 'components_section_casestudies';
   info: {
@@ -170,6 +341,20 @@ export interface SectionCasestudy extends Struct.ComponentSchema {
     bottomPara: Schema.Attribute.Blocks;
     casestudyCard: Schema.Attribute.Component<'element.casestudy-card', true>;
     para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionCasestudysections extends Struct.ComponentSchema {
+  collectionName: 'components_section_casestudysections';
+  info: {
+    displayName: 'casestudysections';
+  };
+  attributes: {
+    businessModel: Schema.Attribute.String;
+    industry: Schema.Attribute.String;
+    marketGeo: Schema.Attribute.String;
+    servicesDelivered: Schema.Attribute.String;
     title: Schema.Attribute.String;
   };
 }
@@ -206,6 +391,19 @@ export interface SectionOutcome extends Struct.ComponentSchema {
     card: Schema.Attribute.Component<'element.card', true>;
     orangeText: Schema.Attribute.String;
     para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionSectionWhythisWorked extends Struct.ComponentSchema {
+  collectionName: 'components_section_section_whythis_workeds';
+  info: {
+    displayName: 'sectionWhythisWorked';
+  };
+  attributes: {
+    button: Schema.Attribute.Component<'element.button', false>;
+    description: Schema.Attribute.Blocks;
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     title: Schema.Attribute.String;
   };
 }
@@ -274,22 +472,38 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'element.accordion': ElementAccordion;
+      'element.approach-cards': ElementApproachCards;
       'element.button': ElementButton;
       'element.card': ElementCard;
       'element.card1': ElementCard1;
+      'element.case-banner-traffic': ElementCaseBannerTraffic;
+      'element.case-challenge-cards': ElementCaseChallengeCards;
+      'element.case-metric-values': ElementCaseMetricValues;
       'element.casestudy-card': ElementCasestudyCard;
       'element.faq': ElementFaq;
       'element.imgcard': ElementImgcard;
+      'element.metric-points': ElementMetricPoints;
+      'element.result-impact': ElementResultImpact;
       'element.tabs': ElementTabs;
       'element.testimonials': ElementTestimonials;
       'section.accordion1': SectionAccordion1;
       'section.accordion2': SectionAccordion2;
       'section.adv': SectionAdv;
       'section.banner': SectionBanner;
+      'section.case-approach': SectionCaseApproach;
+      'section.case-banner': SectionCaseBanner;
+      'section.case-challenge': SectionCaseChallenge;
+      'section.case-image-slider': SectionCaseImageSlider;
+      'section.case-implementation': SectionCaseImplementation;
+      'section.case-metrics': SectionCaseMetrics;
+      'section.case-resolution': SectionCaseResolution;
+      'section.case-results': SectionCaseResults;
       'section.casestudy': SectionCasestudy;
+      'section.casestudysections': SectionCasestudysections;
       'section.faq': SectionFaq;
       'section.horizontaltab': SectionHorizontaltab;
       'section.outcome': SectionOutcome;
+      'section.section-whythis-worked': SectionSectionWhythisWorked;
       'section.services-sec': SectionServicesSec;
       'section.testimonials': SectionTestimonials;
       'section.vertical-tab': SectionVerticalTab;

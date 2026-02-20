@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_section_section_whythis_workeds",
+  "info": {
+    "displayName": "sectionWhythisWorked"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "button": {
+      "type": "component",
+      "component": "element.button",
+      "repeatable": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    }
+  },
+  "config": {}
+}

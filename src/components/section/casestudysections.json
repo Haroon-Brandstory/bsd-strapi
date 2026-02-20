@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_section_casestudysections",
+  "info": {
+    "displayName": "casestudysections"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "marketGeo": {
+      "type": "string"
+    },
+    "businessModel": {
+      "type": "string"
+    },
+    "servicesDelivered": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

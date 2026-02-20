@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_element_case_challenge_cards",
+  "info": {
+    "displayName": "caseChallengeCards"
+  },
+  "options": {},
+  "attributes": {
+    "numImg": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "csChallenge": {
+      "type": "string"
+    },
+    "csResolution": {
+      "type": "string"
+    },
+    "csResult": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_case_results",
+  "info": {
+    "displayName": "caseResults"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "impactCards": {
+      "type": "component",
+      "component": "element.result-impact",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

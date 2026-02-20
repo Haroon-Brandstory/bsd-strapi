@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_element_case_banner_traffics",
+  "info": {
+    "displayName": "caseBannerTraffic"
+  },
+  "options": {},
+  "attributes": {
+    "trafficNum": {
+      "type": "string"
+    },
+    "desc": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

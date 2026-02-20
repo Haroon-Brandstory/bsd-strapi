@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_element_case_metric_values",
+  "info": {
+    "displayName": "caseMetricValues"
+  },
+  "options": {},
+  "attributes": {
+    "metricValue": {
+      "type": "string"
+    },
+    "caseMetric": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

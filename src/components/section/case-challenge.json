@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_section_case_challenges",
+  "info": {
+    "displayName": "caseChallenge"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

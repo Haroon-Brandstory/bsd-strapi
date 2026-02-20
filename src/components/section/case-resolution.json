@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_case_resolutions",
+  "info": {
+    "displayName": "caseResolution"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "csCards": {
+      "type": "component",
+      "component": "element.case-challenge-cards",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

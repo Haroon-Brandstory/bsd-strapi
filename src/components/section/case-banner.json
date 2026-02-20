@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_section_case_banners",
+  "info": {
+    "displayName": "caseBanner"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "marketGeo": {
+      "type": "string"
+    },
+    "businessModel": {
+      "type": "string"
+    },
+    "servicesDelivered": {
+      "type": "string"
+    },
+    "bannerPara": {
+      "type": "blocks"
+    },
+    "bannerTraffic": {
+      "type": "component",
+      "component": "element.case-banner-traffic",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

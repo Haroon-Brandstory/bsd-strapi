@@ -430,6 +430,48 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCasestudyCasestudy extends Struct.CollectionTypeSchema {
+  collectionName: 'casestudies';
+  info: {
+    displayName: 'casestudy';
+    pluralName: 'casestudies';
+    singularName: 'casestudy';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    caseSections: Schema.Attribute.DynamicZone<
+      [
+        'section.case-banner',
+        'section.case-challenge',
+        'section.case-image-slider',
+        'section.case-metrics',
+        'section.case-approach',
+        'section.case-implementation',
+        'section.case-results',
+        'section.section-whythis-worked',
+        'section.case-resolution',
+      ]
+    >;
+    caseStudySlug: Schema.Attribute.UID;
+    caseStudyTitle: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::casestudy.casestudy'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLandingPageLandingPage extends Struct.CollectionTypeSchema {
   collectionName: 'landing_pages';
   info: {
@@ -1000,6 +1042,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::casestudy.casestudy': ApiCasestudyCasestudy;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

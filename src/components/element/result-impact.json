@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_element_result_impacts",
+  "info": {
+    "displayName": "resultImpact"
+  },
+  "options": {},
+  "attributes": {
+    "impactPerc": {
+      "type": "string"
+    },
+    "impactDesc": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

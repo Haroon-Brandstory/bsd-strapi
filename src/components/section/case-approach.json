@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_section_case_approaches",
+  "info": {
+    "displayName": "caseApproach"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "card": {
+      "type": "component",
+      "component": "element.approach-cards",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

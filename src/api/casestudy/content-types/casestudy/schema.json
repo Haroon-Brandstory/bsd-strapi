@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "casestudies",
+  "info": {
+    "singularName": "casestudy",
+    "pluralName": "casestudies",
+    "displayName": "casestudy"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "caseStudyTitle": {
+      "type": "string"
+    },
+    "caseStudySlug": {
+      "type": "uid"
+    },
+    "caseSections": {
+      "type": "dynamiczone",
+      "components": [
+        "section.case-banner",
+        "section.case-challenge",
+        "section.case-image-slider",
+        "section.case-metrics",
+        "section.case-approach",
+        "section.case-implementation",
+        "section.case-results",
+        "section.section-whythis-worked",
+        "section.case-resolution"
+      ]
+    }
+  }
+}
