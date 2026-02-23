@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_section_horizontaltabs",
+  "collectionName": "components_section_ind_objectives",
   "info": {
-    "displayName": "horizontaltab"
+    "displayName": "indObjectives"
   },
   "options": {},
   "attributes": {
@@ -11,9 +11,9 @@
     "description": {
       "type": "blocks"
     },
-    "tabs": {
+    "cards": {
       "type": "component",
-      "component": "element.tabs",
+      "component": "element.approach-cards",
       "repeatable": true
     }
   },

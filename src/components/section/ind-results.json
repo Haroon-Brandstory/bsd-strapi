@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_ind_results",
+  "info": {
+    "displayName": "indResults"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "item": {
+      "type": "component",
+      "component": "element.impact-items",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

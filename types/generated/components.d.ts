@@ -94,6 +94,19 @@ export interface ElementCaseMetricValues extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementCases extends Struct.ComponentSchema {
+  collectionName: 'components_element_cases';
+  info: {
+    displayName: 'cases';
+  };
+  attributes: {
+    businessImpact: Schema.Attribute.String;
+    description: Schema.Attribute.String;
+    services: Schema.Attribute.Component<'element.services-include', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface ElementCasestudyCard extends Struct.ComponentSchema {
   collectionName: 'components_element_casestudy_cards';
   info: {
@@ -119,6 +132,16 @@ export interface ElementFaq extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementHighlights extends Struct.ComponentSchema {
+  collectionName: 'components_element_highlights';
+  info: {
+    displayName: 'highlights';
+  };
+  attributes: {
+    highlight: Schema.Attribute.String;
+  };
+}
+
 export interface ElementImgcard extends Struct.ComponentSchema {
   collectionName: 'components_element_imgcards';
   info: {
@@ -127,6 +150,17 @@ export interface ElementImgcard extends Struct.ComponentSchema {
   attributes: {
     img: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
     para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface ElementImpactItems extends Struct.ComponentSchema {
+  collectionName: 'components_element_impact_items';
+  info: {
+    displayName: 'impactItems';
+  };
+  attributes: {
+    description: Schema.Attribute.String;
     title: Schema.Attribute.String;
   };
 }
@@ -149,6 +183,28 @@ export interface ElementResultImpact extends Struct.ComponentSchema {
   attributes: {
     impactDesc: Schema.Attribute.String;
     impactPerc: Schema.Attribute.String;
+  };
+}
+
+export interface ElementServicesInclude extends Struct.ComponentSchema {
+  collectionName: 'components_element_services_includes';
+  info: {
+    displayName: 'servicesInclude';
+  };
+  attributes: {
+    service: Schema.Attribute.String;
+  };
+}
+
+export interface ElementSteps extends Struct.ComponentSchema {
+  collectionName: 'components_element_steps';
+  info: {
+    displayName: 'steps';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    number: Schema.Attribute.String;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -376,7 +432,68 @@ export interface SectionHorizontaltab extends Struct.ComponentSchema {
     displayName: 'horizontaltab';
   };
   attributes: {
+    description: Schema.Attribute.Blocks;
     tabs: Schema.Attribute.Component<'element.tabs', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionIndBanner extends Struct.ComponentSchema {
+  collectionName: 'components_section_ind_banners';
+  info: {
+    displayName: 'indBanner';
+  };
+  attributes: {
+    button1: Schema.Attribute.Component<'element.button', false>;
+    button2: Schema.Attribute.Component<'element.button', false>;
+    description: Schema.Attribute.Blocks;
+    highlights: Schema.Attribute.Component<'element.highlights', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionIndDigitalMarketing extends Struct.ComponentSchema {
+  collectionName: 'components_section_ind_digital_marketings';
+  info: {
+    displayName: 'indDigitalMarketing';
+  };
+  attributes: {
+    description: Schema.Attribute.String;
+    dmcase: Schema.Attribute.Component<'element.cases', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionIndGrowth extends Struct.ComponentSchema {
+  collectionName: 'components_section_ind_growths';
+  info: {
+    displayName: 'indGrowth';
+  };
+  attributes: {
+    step: Schema.Attribute.Component<'element.steps', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionIndObjectives extends Struct.ComponentSchema {
+  collectionName: 'components_section_ind_objectives';
+  info: {
+    displayName: 'indObjectives';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'element.approach-cards', true>;
+    description: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionIndResults extends Struct.ComponentSchema {
+  collectionName: 'components_section_ind_results';
+  info: {
+    displayName: 'indResults';
+  };
+  attributes: {
+    item: Schema.Attribute.Component<'element.impact-items', true>;
     title: Schema.Attribute.String;
   };
 }
@@ -479,11 +596,16 @@ declare module '@strapi/strapi' {
       'element.case-banner-traffic': ElementCaseBannerTraffic;
       'element.case-challenge-cards': ElementCaseChallengeCards;
       'element.case-metric-values': ElementCaseMetricValues;
+      'element.cases': ElementCases;
       'element.casestudy-card': ElementCasestudyCard;
       'element.faq': ElementFaq;
+      'element.highlights': ElementHighlights;
       'element.imgcard': ElementImgcard;
+      'element.impact-items': ElementImpactItems;
       'element.metric-points': ElementMetricPoints;
       'element.result-impact': ElementResultImpact;
+      'element.services-include': ElementServicesInclude;
+      'element.steps': ElementSteps;
       'element.tabs': ElementTabs;
       'element.testimonials': ElementTestimonials;
       'section.accordion1': SectionAccordion1;
@@ -502,6 +624,11 @@ declare module '@strapi/strapi' {
       'section.casestudysections': SectionCasestudysections;
       'section.faq': SectionFaq;
       'section.horizontaltab': SectionHorizontaltab;
+      'section.ind-banner': SectionIndBanner;
+      'section.ind-digital-marketing': SectionIndDigitalMarketing;
+      'section.ind-growth': SectionIndGrowth;
+      'section.ind-objectives': SectionIndObjectives;
+      'section.ind-results': SectionIndResults;
       'section.outcome': SectionOutcome;
       'section.section-whythis-worked': SectionSectionWhythisWorked;
       'section.services-sec': SectionServicesSec;

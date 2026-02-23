@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_section_ind_growths",
+  "info": {
+    "displayName": "indGrowth"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "step": {
+      "type": "component",
+      "component": "element.steps",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_section_ind_banners",
+  "info": {
+    "displayName": "indBanner"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "highlights": {
+      "type": "component",
+      "component": "element.highlights",
+      "repeatable": true
+    },
+    "button1": {
+      "type": "component",
+      "component": "element.button",
+      "repeatable": false
+    },
+    "button2": {
+      "type": "component",
+      "component": "element.button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

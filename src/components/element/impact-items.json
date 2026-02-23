@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_element_impact_items",
+  "info": {
+    "displayName": "impactItems"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

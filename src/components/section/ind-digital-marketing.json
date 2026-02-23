@@ -1,7 +1,7 @@
 {
-  "collectionName": "components_section_horizontaltabs",
+  "collectionName": "components_section_ind_digital_marketings",
   "info": {
-    "displayName": "horizontaltab"
+    "displayName": "indDigitalMarketing"
   },
   "options": {},
   "attributes": {
@@ -9,11 +9,11 @@
       "type": "string"
     },
     "description": {
-      "type": "blocks"
+      "type": "string"
     },
-    "tabs": {
+    "dmcase": {
       "type": "component",
-      "component": "element.tabs",
+      "component": "element.cases",
       "repeatable": true
     }
   },

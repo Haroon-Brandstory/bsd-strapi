@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_services_includes",
+  "info": {
+    "displayName": "servicesInclude"
+  },
+  "options": {},
+  "attributes": {
+    "service": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
