@@ -23,6 +23,26 @@ export interface ElementApproachCards extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementBlogContent extends Struct.ComponentSchema {
+  collectionName: 'components_element_blog_contents';
+  info: {
+    displayName: 'blogContent';
+  };
+  attributes: {
+    blogContent: Schema.Attribute.Blocks;
+  };
+}
+
+export interface ElementBlogImage extends Struct.ComponentSchema {
+  collectionName: 'components_element_blog_images';
+  info: {
+    displayName: 'blogImage';
+  };
+  attributes: {
+    blogImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+  };
+}
+
 export interface ElementButton extends Struct.ComponentSchema {
   collectionName: 'components_element_buttons';
   info: {
@@ -590,6 +610,8 @@ declare module '@strapi/strapi' {
     export interface ComponentSchemas {
       'element.accordion': ElementAccordion;
       'element.approach-cards': ElementApproachCards;
+      'element.blog-content': ElementBlogContent;
+      'element.blog-image': ElementBlogImage;
       'element.button': ElementButton;
       'element.card': ElementCard;
       'element.card1': ElementCard1;

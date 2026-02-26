@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_blog_contents",
+  "info": {
+    "displayName": "blogContent"
+  },
+  "options": {},
+  "attributes": {
+    "blogContent": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

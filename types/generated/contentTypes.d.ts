@@ -430,6 +430,40 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
+  collectionName: 'blogs';
+  info: {
+    displayName: 'blog';
+    pluralName: 'blogs';
+    singularName: 'blog';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    blogDate: Schema.Attribute.Date;
+    blogImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    blogMetaDescription: Schema.Attribute.String;
+    blogMetaTitle: Schema.Attribute.String;
+    blogQuote: Schema.Attribute.String;
+    blogSlug: Schema.Attribute.String;
+    blogTitle: Schema.Attribute.String;
+    contentSection: Schema.Attribute.DynamicZone<
+      ['element.blog-content', 'element.blog-image']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'> &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCasestudyCasestudy extends Struct.CollectionTypeSchema {
   collectionName: 'casestudies';
   info: {
@@ -1088,6 +1122,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::blog.blog': ApiBlogBlog;
       'api::casestudy.casestudy': ApiCasestudyCasestudy;
       'api::industry.industry': ApiIndustryIndustry;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
