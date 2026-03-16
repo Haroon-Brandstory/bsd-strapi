@@ -45,6 +45,11 @@
     },
     "blogQuote": {
       "type": "string"
+    },
+    "blog_categories": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::blog-category.blog-category"
     }
   }
 }

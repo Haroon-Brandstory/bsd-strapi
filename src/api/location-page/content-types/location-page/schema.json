@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "location_pages",
+  "info": {
+    "singularName": "location-page",
+    "pluralName": "location-pages",
+    "displayName": "Location Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "pageTitle": {
+      "type": "string"
+    },
+    "fullPath": {
+      "type": "uid"
+    },
+    "seotitle": {
+      "type": "string"
+    },
+    "seodescription": {
+      "type": "string"
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "components": [
+        "section.banner",
+        "section.testimonials",
+        "section.services-sec",
+        "section.outcome",
+        "section.casestudy",
+        "section.accordion2",
+        "section.accordion1",
+        "section.faq",
+        "section.yourbrandyourstrategy",
+        "section.whyyourpartner",
+        "section.vertical-tab",
+        "section.horizontaltab",
+        "section.adv"
+      ]
+    }
+  }
+}
