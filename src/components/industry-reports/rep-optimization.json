@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_industry_reports_rep_optimizations",
+  "info": {
+    "displayName": "repOptimization"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "dominanceLabel": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    },
+    "example": {
+      "type": "string"
+    },
+    "exampleAnswer": {
+      "type": "string"
+    },
+    "reviewSignalLabel": {
+      "type": "string"
+    },
+    "ratingNumber": {
+      "type": "string"
+    },
+    "ratingLabel": {
+      "type": "string"
+    },
+    "reviewNum": {
+      "type": "string"
+    },
+    "revLabel": {
+      "type": "string"
+    },
+    "recommendationLabel": {
+      "type": "text"
+    },
+    "recommendation": {
+      "type": "component",
+      "component": "industry-reports.recommendations",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

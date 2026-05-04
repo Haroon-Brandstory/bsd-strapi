@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_industry_reports_rep_strategies",
+  "info": {
+    "displayName": "repStrategy"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "component": "industry-reports.aeo-geo-card",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

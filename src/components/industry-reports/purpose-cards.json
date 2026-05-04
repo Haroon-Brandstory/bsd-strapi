@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_industry_reports_purpose_cards",
+  "info": {
+    "displayName": "purposeCards"
+  },
+  "options": {},
+  "attributes": {
+    "number": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

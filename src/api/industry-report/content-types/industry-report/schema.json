@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "industry_reports",
+  "info": {
+    "singularName": "industry-report",
+    "pluralName": "industry-reports",
+    "displayName": "Industry Report"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "pageTitle": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid"
+    },
+    "parentSlug": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "category",
+        "report"
+      ]
+    },
+    "seoTitle": {
+      "type": "string"
+    },
+    "seoDescription": {
+      "type": "string"
+    },
+    "keywords": {
+      "type": "text"
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "components": [
+        "industry-reports.rep-banner",
+        "industry-reports.rep-exc-summary",
+        "industry-reports.rep-ind-overview",
+        "industry-reports.rep-perf-bench-mark",
+        "industry-reports.rep-comp-and-market-leaders",
+        "industry-reports.rep-search-volume-analysis",
+        "industry-reports.rep-content-and-insights",
+        "industry-reports.rep-optimization",
+        "industry-reports.rep-tech-bench-mark",
+        "industry-reports.rep-future",
+        "industry-reports.rep-strategy",
+        "element.rep-recommendations",
+        "industry-reports.rep-appendix"
+      ]
+    }
+  }
+}

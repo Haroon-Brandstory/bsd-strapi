@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_industry_reports_rep_banners",
+  "info": {
+    "displayName": "repBanner"
+  },
+  "options": {},
+  "attributes": {
+    "preparedBy": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "cta": {
+      "type": "component",
+      "component": "element.button",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_element_rep_recommendations",
+  "info": {
+    "displayName": "repRecommendations"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "component": "industry-reports.recommendation-cards",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

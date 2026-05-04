@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_industry_reports_tables",
+  "info": {
+    "displayName": "table"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "component",
+      "component": "element.table-heading",
+      "repeatable": true
+    },
+    "Row": {
+      "type": "component",
+      "component": "element.table-row",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

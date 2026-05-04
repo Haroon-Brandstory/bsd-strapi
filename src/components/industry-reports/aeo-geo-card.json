@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_industry_reports_aeo_geo_cards",
+  "info": {
+    "displayName": "aeo-geo-card"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "text"
+    },
+    "text": {
+      "type": "component",
+      "component": "element.example",
+      "repeatable": true
+    },
+    "points": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

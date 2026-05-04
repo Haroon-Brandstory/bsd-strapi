@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_industry_reports_benchmark_cards",
+  "info": {
+    "displayName": "benchmarkCard"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "numValue": {
+      "type": "string"
+    },
+    "domAuthority": {
+      "type": "string"
+    },
+    "textBottom": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

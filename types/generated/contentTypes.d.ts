@@ -542,6 +542,58 @@ export interface ApiCasestudyCasestudy extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiIndustryReportIndustryReport
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'industry_reports';
+  info: {
+    displayName: 'Industry Report';
+    pluralName: 'industry-reports';
+    singularName: 'industry-report';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    keywords: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::industry-report.industry-report'
+    > &
+      Schema.Attribute.Private;
+    pageTitle: Schema.Attribute.String;
+    parentSlug: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    sections: Schema.Attribute.DynamicZone<
+      [
+        'industry-reports.rep-banner',
+        'industry-reports.rep-exc-summary',
+        'industry-reports.rep-ind-overview',
+        'industry-reports.rep-perf-bench-mark',
+        'industry-reports.rep-comp-and-market-leaders',
+        'industry-reports.rep-search-volume-analysis',
+        'industry-reports.rep-content-and-insights',
+        'industry-reports.rep-optimization',
+        'industry-reports.rep-tech-bench-mark',
+        'industry-reports.rep-future',
+        'industry-reports.rep-strategy',
+        'element.rep-recommendations',
+        'industry-reports.rep-appendix',
+      ]
+    >;
+    seoDescription: Schema.Attribute.String;
+    seoTitle: Schema.Attribute.String;
+    slug: Schema.Attribute.UID;
+    type: Schema.Attribute.Enumeration<['category', 'report']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiIndustryIndustry extends Struct.CollectionTypeSchema {
   collectionName: 'industries';
   info: {
@@ -1208,6 +1260,7 @@ declare module '@strapi/strapi' {
       'api::blog-category.blog-category': ApiBlogCategoryBlogCategory;
       'api::blog.blog': ApiBlogBlog;
       'api::casestudy.casestudy': ApiCasestudyCasestudy;
+      'api::industry-report.industry-report': ApiIndustryReportIndustryReport;
       'api::industry.industry': ApiIndustryIndustry;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::location-page.location-page': ApiLocationPageLocationPage;

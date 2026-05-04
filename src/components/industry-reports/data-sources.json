@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_industry_reports_data_sources",
+  "info": {
+    "displayName": "dataSources"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "listicles": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_industry_reports_rep_perf_bench_marks",
+  "info": {
+    "displayName": "repPerfBenchMark"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "component": "industry-reports.purpose-cards",
+      "repeatable": true
+    },
+    "splitCards": {
+      "type": "component",
+      "component": "industry-reports.keyword-intent-split",
+      "repeatable": true
+    },
+    "splitTitle": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

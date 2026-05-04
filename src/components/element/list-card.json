@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_element_list_cards",
+  "info": {
+    "displayName": "list Card"
+  },
+  "options": {},
+  "attributes": {
+    "cardTitle": {
+      "type": "string"
+    },
+    "list": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

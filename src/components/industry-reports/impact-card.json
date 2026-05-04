@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_industry_reports_impact_cards",
+  "info": {
+    "displayName": "impactCard"
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "tag": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

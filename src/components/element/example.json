@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_examples",
+  "info": {
+    "displayName": "example"
+  },
+  "options": {},
+  "attributes": {
+    "text": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,39 @@
+{
+  "collectionName": "components_industry_reports_rep_comp_and_market_leaders",
+  "info": {
+    "displayName": "repCompAndMarketLeaders"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "perfTable": {
+      "type": "component",
+      "component": "industry-reports.table",
+      "repeatable": false
+    },
+    "cardTitle": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "points": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    },
+    "emergingCompetitor": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    },
+    "benchmark": {
+      "type": "component",
+      "component": "industry-reports.benchmark-card",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

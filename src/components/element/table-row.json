@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_element_table_rows",
+  "info": {
+    "displayName": "tableRow"
+  },
+  "options": {},
+  "attributes": {
+    "cells": {
+      "type": "component",
+      "component": "element.cells",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

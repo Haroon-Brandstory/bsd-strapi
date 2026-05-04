@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_industry_reports_keyword_intent_splits",
+  "info": {
+    "displayName": "keywordIntentSplit"
+  },
+  "options": {},
+  "attributes": {
+    "keyword": {
+      "type": "string"
+    },
+    "example": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

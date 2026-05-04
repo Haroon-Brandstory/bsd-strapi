@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_lists",
+  "info": {
+    "displayName": "list"
+  },
+  "options": {},
+  "attributes": {
+    "point": {
+      "type": "text"
+    }
+  },
+  "config": {}
+}

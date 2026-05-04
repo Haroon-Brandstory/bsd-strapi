@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_element_table_headings",
+  "info": {
+    "displayName": "tableHeading"
+  },
+  "options": {},
+  "attributes": {
+    "heading": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

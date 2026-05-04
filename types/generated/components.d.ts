@@ -141,6 +141,26 @@ export interface ElementCasestudyCard extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementCells extends Struct.ComponentSchema {
+  collectionName: 'components_element_cells';
+  info: {
+    displayName: 'cells';
+  };
+  attributes: {
+    tableData: Schema.Attribute.Text;
+  };
+}
+
+export interface ElementExample extends Struct.ComponentSchema {
+  collectionName: 'components_element_examples';
+  info: {
+    displayName: 'example';
+  };
+  attributes: {
+    text: Schema.Attribute.String;
+  };
+}
+
 export interface ElementFaq extends Struct.ComponentSchema {
   collectionName: 'components_element_faqs';
   info: {
@@ -185,6 +205,27 @@ export interface ElementImpactItems extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementList extends Struct.ComponentSchema {
+  collectionName: 'components_element_lists';
+  info: {
+    displayName: 'list';
+  };
+  attributes: {
+    point: Schema.Attribute.Text;
+  };
+}
+
+export interface ElementListCard extends Struct.ComponentSchema {
+  collectionName: 'components_element_list_cards';
+  info: {
+    displayName: 'list Card';
+  };
+  attributes: {
+    cardTitle: Schema.Attribute.String;
+    list: Schema.Attribute.Component<'element.list', true>;
+  };
+}
+
 export interface ElementMetricPoints extends Struct.ComponentSchema {
   collectionName: 'components_element_metric_points';
   info: {
@@ -192,6 +233,20 @@ export interface ElementMetricPoints extends Struct.ComponentSchema {
   };
   attributes: {
     point: Schema.Attribute.String;
+  };
+}
+
+export interface ElementRepRecommendations extends Struct.ComponentSchema {
+  collectionName: 'components_element_rep_recommendations';
+  info: {
+    displayName: 'repRecommendations';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<
+      'industry-reports.recommendation-cards',
+      true
+    >;
+    sectionTitle: Schema.Attribute.String;
   };
 }
 
@@ -228,6 +283,26 @@ export interface ElementSteps extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementTableHeading extends Struct.ComponentSchema {
+  collectionName: 'components_element_table_headings';
+  info: {
+    displayName: 'tableHeading';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+  };
+}
+
+export interface ElementTableRow extends Struct.ComponentSchema {
+  collectionName: 'components_element_table_rows';
+  info: {
+    displayName: 'tableRow';
+  };
+  attributes: {
+    cells: Schema.Attribute.Component<'element.cells', true>;
+  };
+}
+
 export interface ElementTabs extends Struct.ComponentSchema {
   collectionName: 'components_element_tabs';
   info: {
@@ -249,6 +324,382 @@ export interface ElementTestimonials extends Struct.ComponentSchema {
     author: Schema.Attribute.String;
     position: Schema.Attribute.String;
     review: Schema.Attribute.Text;
+  };
+}
+
+export interface IndustryReportsAdoptionCards extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_adoption_cards';
+  info: {
+    displayName: 'adoptionCards';
+  };
+  attributes: {
+    image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsAeoGeoCard extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_aeo_geo_cards';
+  info: {
+    displayName: 'aeo-geo-card';
+  };
+  attributes: {
+    points: Schema.Attribute.Component<'element.list', true>;
+    subtitle: Schema.Attribute.Text;
+    text: Schema.Attribute.Component<'element.example', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsBenchmarkCard extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_benchmark_cards';
+  info: {
+    displayName: 'benchmarkCard';
+  };
+  attributes: {
+    domAuthority: Schema.Attribute.String;
+    numValue: Schema.Attribute.String;
+    textBottom: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsCitySpecific extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_city_specifics';
+  info: {
+    displayName: 'citySpecific';
+  };
+  attributes: {
+    cityName: Schema.Attribute.String;
+    cityTable: Schema.Attribute.Component<'industry-reports.table', false>;
+  };
+}
+
+export interface IndustryReportsDataSources extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_data_sources';
+  info: {
+    displayName: 'dataSources';
+  };
+  attributes: {
+    listicles: Schema.Attribute.Component<'element.list', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsImpactCard extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_impact_cards';
+  info: {
+    displayName: 'impactCard';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    tag: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsKeyfindingCard extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_keyfinding_cards';
+  info: {
+    displayName: 'keyfindingCard';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    tag: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsKeywordIntentSplit
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_keyword_intent_splits';
+  info: {
+    displayName: 'keywordIntentSplit';
+  };
+  attributes: {
+    example: Schema.Attribute.Text;
+    keyword: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsOverviewListcards
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_overview_listcards';
+  info: {
+    displayName: 'overviewListcards';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsPurposeCards extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_purpose_cards';
+  info: {
+    displayName: 'purposeCards';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    number: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRecommendationCards
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_recommendation_cards';
+  info: {
+    displayName: 'recommendationCards';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRecommendations extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_recommendations';
+  info: {
+    displayName: 'recommendations';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepAppendix extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_appendices';
+  info: {
+    displayName: 'repAppendix';
+  };
+  attributes: {
+    sectionTitle: Schema.Attribute.String;
+    sources: Schema.Attribute.Component<'industry-reports.data-sources', true>;
+  };
+}
+
+export interface IndustryReportsRepBanner extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_banners';
+  info: {
+    displayName: 'repBanner';
+  };
+  attributes: {
+    cta: Schema.Attribute.Component<'element.button', false>;
+    preparedBy: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepCompAndMarketLeaders
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_comp_and_market_leaders';
+  info: {
+    displayName: 'repCompAndMarketLeaders';
+  };
+  attributes: {
+    benchmark: Schema.Attribute.Component<
+      'industry-reports.benchmark-card',
+      false
+    >;
+    cardTitle: Schema.Attribute.String;
+    emergingCompetitor: Schema.Attribute.Component<'element.list', true>;
+    perfTable: Schema.Attribute.Component<'industry-reports.table', false>;
+    points: Schema.Attribute.Component<'element.list', true>;
+    sectionTitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepContentAndInsights
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_content_and_insights';
+  info: {
+    displayName: 'repContentAndInsights';
+  };
+  attributes: {
+    adoptCard: Schema.Attribute.Component<
+      'industry-reports.adoption-cards',
+      true
+    >;
+    listCards: Schema.Attribute.Component<'element.list-card', true>;
+    schemaAdoptionTitle: Schema.Attribute.String;
+    sectionTitle: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepExcSummary extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_exc_summaries';
+  info: {
+    displayName: 'repExcSummary';
+  };
+  attributes: {
+    card: Schema.Attribute.Component<'industry-reports.purpose-cards', true>;
+    keyfindings: Schema.Attribute.Component<
+      'industry-reports.keyfinding-card',
+      true
+    >;
+    purpose: Schema.Attribute.Text;
+    sectionTitle: Schema.Attribute.String;
+    snapshotOfOpportunities: Schema.Attribute.Component<
+      'industry-reports.snapshot',
+      true
+    >;
+  };
+}
+
+export interface IndustryReportsRepFuture extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_futures';
+  info: {
+    displayName: 'repFuture';
+  };
+  attributes: {
+    growthCard: Schema.Attribute.Component<
+      'industry-reports.impact-card',
+      false
+    >;
+    impactCard: Schema.Attribute.Component<
+      'industry-reports.impact-card',
+      false
+    >;
+    numComp: Schema.Attribute.Component<
+      'industry-reports.purpose-cards',
+      false
+    >;
+    sectionTitle: Schema.Attribute.String;
+    techCard: Schema.Attribute.Component<
+      'industry-reports.purpose-cards',
+      false
+    >;
+  };
+}
+
+export interface IndustryReportsRepIndOverview extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_ind_overviews';
+  info: {
+    displayName: 'repIndOverview';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'industry-reports.purpose-cards', true>;
+    ListCards: Schema.Attribute.Component<
+      'industry-reports.overview-listcards',
+      true
+    >;
+  };
+}
+
+export interface IndustryReportsRepOptimization extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_optimizations';
+  info: {
+    displayName: 'repOptimization';
+  };
+  attributes: {
+    description: Schema.Attribute.Blocks;
+    dominanceLabel: Schema.Attribute.String;
+    example: Schema.Attribute.String;
+    exampleAnswer: Schema.Attribute.String;
+    ratingLabel: Schema.Attribute.String;
+    ratingNumber: Schema.Attribute.String;
+    recommendation: Schema.Attribute.Component<
+      'industry-reports.recommendations',
+      true
+    >;
+    recommendationLabel: Schema.Attribute.Text;
+    reviewNum: Schema.Attribute.String;
+    reviewSignalLabel: Schema.Attribute.String;
+    revLabel: Schema.Attribute.String;
+    sectionTitle: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepPerfBenchMark
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_perf_bench_marks';
+  info: {
+    displayName: 'repPerfBenchMark';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'industry-reports.purpose-cards', true>;
+    sectionTitle: Schema.Attribute.String;
+    splitCards: Schema.Attribute.Component<
+      'industry-reports.keyword-intent-split',
+      true
+    >;
+    splitTitle: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepSearchVolumeAnalysis
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_search_volume_analyses';
+  info: {
+    displayName: 'repSearchVolumeAnalysis';
+  };
+  attributes: {
+    cardTitle: Schema.Attribute.String;
+    cityCards: Schema.Attribute.Component<
+      'industry-reports.city-specific',
+      true
+    >;
+    insightDesc: Schema.Attribute.Text;
+    insightTitle: Schema.Attribute.String;
+    insightValue: Schema.Attribute.String;
+    searchValues: Schema.Attribute.Component<
+      'industry-reports.purpose-cards',
+      true
+    >;
+    sectionTitle: Schema.Attribute.String;
+    totalSearchVolume: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepStrategy extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_strategies';
+  info: {
+    displayName: 'repStrategy';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'industry-reports.aeo-geo-card', true>;
+    sectionTitle: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsRepTechBenchMark
+  extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_rep_tech_bench_marks';
+  info: {
+    displayName: 'repTechBenchMark';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'industry-reports.purpose-cards', true>;
+    listicles: Schema.Attribute.Component<'element.list-card', true>;
+    sectionTitle: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsSnapshot extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_snapshots';
+  info: {
+    displayName: 'snapshot';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    tag: Schema.Attribute.String;
+  };
+}
+
+export interface IndustryReportsTable extends Struct.ComponentSchema {
+  collectionName: 'components_industry_reports_tables';
+  info: {
+    displayName: 'table';
+  };
+  attributes: {
+    heading: Schema.Attribute.Component<'element.table-heading', true>;
+    Row: Schema.Attribute.Component<'element.table-row', true>;
   };
 }
 
@@ -620,16 +1071,49 @@ declare module '@strapi/strapi' {
       'element.case-metric-values': ElementCaseMetricValues;
       'element.cases': ElementCases;
       'element.casestudy-card': ElementCasestudyCard;
+      'element.cells': ElementCells;
+      'element.example': ElementExample;
       'element.faq': ElementFaq;
       'element.highlights': ElementHighlights;
       'element.imgcard': ElementImgcard;
       'element.impact-items': ElementImpactItems;
+      'element.list': ElementList;
+      'element.list-card': ElementListCard;
       'element.metric-points': ElementMetricPoints;
+      'element.rep-recommendations': ElementRepRecommendations;
       'element.result-impact': ElementResultImpact;
       'element.services-include': ElementServicesInclude;
       'element.steps': ElementSteps;
+      'element.table-heading': ElementTableHeading;
+      'element.table-row': ElementTableRow;
       'element.tabs': ElementTabs;
       'element.testimonials': ElementTestimonials;
+      'industry-reports.adoption-cards': IndustryReportsAdoptionCards;
+      'industry-reports.aeo-geo-card': IndustryReportsAeoGeoCard;
+      'industry-reports.benchmark-card': IndustryReportsBenchmarkCard;
+      'industry-reports.city-specific': IndustryReportsCitySpecific;
+      'industry-reports.data-sources': IndustryReportsDataSources;
+      'industry-reports.impact-card': IndustryReportsImpactCard;
+      'industry-reports.keyfinding-card': IndustryReportsKeyfindingCard;
+      'industry-reports.keyword-intent-split': IndustryReportsKeywordIntentSplit;
+      'industry-reports.overview-listcards': IndustryReportsOverviewListcards;
+      'industry-reports.purpose-cards': IndustryReportsPurposeCards;
+      'industry-reports.recommendation-cards': IndustryReportsRecommendationCards;
+      'industry-reports.recommendations': IndustryReportsRecommendations;
+      'industry-reports.rep-appendix': IndustryReportsRepAppendix;
+      'industry-reports.rep-banner': IndustryReportsRepBanner;
+      'industry-reports.rep-comp-and-market-leaders': IndustryReportsRepCompAndMarketLeaders;
+      'industry-reports.rep-content-and-insights': IndustryReportsRepContentAndInsights;
+      'industry-reports.rep-exc-summary': IndustryReportsRepExcSummary;
+      'industry-reports.rep-future': IndustryReportsRepFuture;
+      'industry-reports.rep-ind-overview': IndustryReportsRepIndOverview;
+      'industry-reports.rep-optimization': IndustryReportsRepOptimization;
+      'industry-reports.rep-perf-bench-mark': IndustryReportsRepPerfBenchMark;
+      'industry-reports.rep-search-volume-analysis': IndustryReportsRepSearchVolumeAnalysis;
+      'industry-reports.rep-strategy': IndustryReportsRepStrategy;
+      'industry-reports.rep-tech-bench-mark': IndustryReportsRepTechBenchMark;
+      'industry-reports.snapshot': IndustryReportsSnapshot;
+      'industry-reports.table': IndustryReportsTable;
       'section.accordion1': SectionAccordion1;
       'section.accordion2': SectionAccordion2;
       'section.adv': SectionAdv;

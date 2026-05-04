@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_industry_reports_rep_content_and_insights",
+  "info": {
+    "displayName": "repContentAndInsights"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "listCards": {
+      "type": "component",
+      "component": "element.list-card",
+      "repeatable": true
+    },
+    "schemaAdoptionTitle": {
+      "type": "string"
+    },
+    "adoptCard": {
+      "type": "component",
+      "component": "industry-reports.adoption-cards",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

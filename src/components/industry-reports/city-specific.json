@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_industry_reports_city_specifics",
+  "info": {
+    "displayName": "citySpecific"
+  },
+  "options": {},
+  "attributes": {
+    "cityName": {
+      "type": "string"
+    },
+    "cityTable": {
+      "type": "component",
+      "component": "industry-reports.table",
+      "repeatable": false
+    }
+  },
+  "config": {}
+}

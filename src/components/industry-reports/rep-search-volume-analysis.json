@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_industry_reports_rep_search_volume_analyses",
+  "info": {
+    "displayName": "repSearchVolumeAnalysis"
+  },
+  "options": {},
+  "attributes": {
+    "sectionTitle": {
+      "type": "string"
+    },
+    "cardTitle": {
+      "type": "string"
+    },
+    "searchValues": {
+      "type": "component",
+      "component": "industry-reports.purpose-cards",
+      "repeatable": true
+    },
+    "totalSearchVolume": {
+      "type": "string"
+    },
+    "insightTitle": {
+      "type": "string"
+    },
+    "insightDesc": {
+      "type": "text"
+    },
+    "insightValue": {
+      "type": "string"
+    },
+    "cityCards": {
+      "type": "component",
+      "component": "industry-reports.city-specific",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

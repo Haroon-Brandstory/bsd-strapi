@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_industry_reports_overview_listcards",
+  "info": {
+    "displayName": "overviewListcards"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}
