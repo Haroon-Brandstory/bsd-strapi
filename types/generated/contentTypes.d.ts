@@ -498,6 +498,38 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiBlogtestBlogtest extends Struct.CollectionTypeSchema {
+  collectionName: 'blogtests';
+  info: {
+    displayName: 'blogtest';
+    pluralName: 'blogtests';
+    singularName: 'blogtest';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    content: Schema.Attribute.Blocks;
+    cover: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::blogtest.blogtest'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCasestudyCasestudy extends Struct.CollectionTypeSchema {
   collectionName: 'casestudies';
   info: {
@@ -1259,6 +1291,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::blog-category.blog-category': ApiBlogCategoryBlogCategory;
       'api::blog.blog': ApiBlogBlog;
+      'api::blogtest.blogtest': ApiBlogtestBlogtest;
       'api::casestudy.casestudy': ApiCasestudyCasestudy;
       'api::industry-report.industry-report': ApiIndustryReportIndustryReport;
       'api::industry.industry': ApiIndustryIndustry;
