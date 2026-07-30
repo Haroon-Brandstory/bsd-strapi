@@ -133,7 +133,7 @@ const FieldSelect = ({
 
 const HomePage = () => {
   const { get, post, put } = useFetchClient();
-  const apiPrefix = `/${pluginId}`;
+  const apiPrefix = `/admin/${pluginId}`;
 
   const apiGet = async <T,>(path: string): Promise<T> => {
     const res = await get(`${apiPrefix}${path}`);

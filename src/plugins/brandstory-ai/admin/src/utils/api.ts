@@ -1,7 +1,8 @@
 import { getFetchClient } from '@strapi/strapi/admin';
 import pluginId from '../pluginId';
 
-const prefix = `/${pluginId}`;
+/** Must match server route prefix (under /admin for prod reverse-proxy). */
+const prefix = `/admin/${pluginId}`;
 
 export async function apiGet<T = unknown>(path: string): Promise<T> {
   const { get } = getFetchClient();

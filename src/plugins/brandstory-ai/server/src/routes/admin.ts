@@ -1,5 +1,11 @@
+/**
+ * Prefix under /admin so same-domain Next.js + nginx (which only
+ * proxies /admin + /api) can reach these routes in production.
+ * Default Strapi plugin prefix is /brandstory-ai (root) — that hits Next 404 HTML.
+ */
 export default {
   type: 'admin',
+  prefix: '/admin/brandstory-ai',
   routes: [
     {
       method: 'GET',
