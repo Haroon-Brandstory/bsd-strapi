@@ -50,6 +50,10 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::blog-category.blog-category"
+    },
+    "brandstorySyncId": {
+      "type": "string",
+      "unique": true
     }
   }
 }

@@ -495,6 +495,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     blogQuote: Schema.Attribute.String;
     blogSlug: Schema.Attribute.String;
     blogTitle: Schema.Attribute.String;
+    brandstorySyncId: Schema.Attribute.String & Schema.Attribute.Unique;
     contentSection: Schema.Attribute.DynamicZone<
       ['element.blog-content', 'element.blog-image']
     >;
@@ -505,38 +506,6 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::blog.blog'> &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiBlogtestBlogtest extends Struct.CollectionTypeSchema {
-  collectionName: 'blogtests';
-  info: {
-    displayName: 'blogtest';
-    pluralName: 'blogtests';
-    singularName: 'blogtest';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    content: Schema.Attribute.Blocks;
-    cover: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    description: Schema.Attribute.Text;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::blogtest.blogtest'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    slug: Schema.Attribute.String;
-    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -785,6 +754,55 @@ export interface ApiLocationPageLocationPage
     >;
     seodescription: Schema.Attribute.String;
     seotitle: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface PluginBrandstoryAiSyncLog extends Struct.CollectionTypeSchema {
+  collectionName: 'brandstory_sync_logs';
+  info: {
+    description: 'Records of Brandstory AI sync operations';
+    displayName: 'Brandstory Sync Log';
+    pluralName: 'sync-logs';
+    singularName: 'sync-log';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: true;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    durationMs: Schema.Attribute.Integer;
+    errors: Schema.Attribute.JSON;
+    failed: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    inserted: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::brandstory-ai.sync-log'
+    > &
+      Schema.Attribute.Private;
+    message: Schema.Attribute.Text;
+    meta: Schema.Attribute.JSON;
+    publishedAt: Schema.Attribute.DateTime;
+    skipped: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    source: Schema.Attribute.Enumeration<['manual', 'cron', 'test']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'manual'>;
+    status: Schema.Attribute.Enumeration<['success', 'partial', 'error']> &
+      Schema.Attribute.Required;
+    updated: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1304,12 +1322,12 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::blog-category.blog-category': ApiBlogCategoryBlogCategory;
       'api::blog.blog': ApiBlogBlog;
-      'api::blogtest.blogtest': ApiBlogtestBlogtest;
       'api::casestudy.casestudy': ApiCasestudyCasestudy;
       'api::industry-report.industry-report': ApiIndustryReportIndustryReport;
       'api::industry.industry': ApiIndustryIndustry;
       'api::landing-page.landing-page': ApiLandingPageLandingPage;
       'api::location-page.location-page': ApiLocationPageLocationPage;
+      'plugin::brandstory-ai.sync-log': PluginBrandstoryAiSyncLog;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;
