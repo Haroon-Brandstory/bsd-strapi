@@ -490,11 +490,11 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     >;
     blogDate: Schema.Attribute.Date;
     blogImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
-    blogMetaDescription: Schema.Attribute.String;
-    blogMetaTitle: Schema.Attribute.String;
-    blogQuote: Schema.Attribute.String;
+    blogMetaDescription: Schema.Attribute.Text;
+    blogMetaTitle: Schema.Attribute.Text;
+    blogQuote: Schema.Attribute.Text;
     blogSlug: Schema.Attribute.String;
-    blogTitle: Schema.Attribute.String;
+    blogTitle: Schema.Attribute.Text;
     brandstorySyncId: Schema.Attribute.String & Schema.Attribute.Unique;
     contentSection: Schema.Attribute.DynamicZone<
       ['element.blog-content', 'element.blog-image']

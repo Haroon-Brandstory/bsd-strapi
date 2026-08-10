@@ -12,16 +12,16 @@
   "pluginOptions": {},
   "attributes": {
     "blogTitle": {
-      "type": "string"
+      "type": "text"
     },
     "blogSlug": {
       "type": "string"
     },
     "blogMetaTitle": {
-      "type": "string"
+      "type": "text"
     },
     "blogMetaDescription": {
-      "type": "string"
+      "type": "text"
     },
     "blogDate": {
       "type": "date"
@@ -44,7 +44,7 @@
       ]
     },
     "blogQuote": {
-      "type": "string"
+      "type": "text"
     },
     "blog_categories": {
       "type": "relation",
