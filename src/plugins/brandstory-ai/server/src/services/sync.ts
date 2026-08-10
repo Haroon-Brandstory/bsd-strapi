@@ -51,6 +51,318 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     await this.importedStore().set({ value: raw });
   },
 
+  /**
+   * Clear tracked Brandstory API ids for the current folder settings only.
+   * Does not delete Strapi blog entries or brandstorySyncId fields.
+   */
+  async clearImportedIds(
+    settings?: PluginSettings
+  ): Promise<{ cleared: number; key: string; folderPair: string }> {
+    const cfg: PluginSettings =
+      settings || (await strapi.plugin('brandstory-ai').service('settings').get());
+    const store = this.importedStore();
+    const raw = ((await store.get({})) as Record<string, string[]>) || {};
+    const key = this.importedOptionKey(cfg);
+    const prev = Array.isArray(raw[key]) ? raw[key] : [];
+    const cleared = prev.length;
+    raw[key] = [];
+    await store.set({ value: raw });
+    return { cleared, key, folderPair: cfg.folderPair || '' };
+  },
+
+  /**
+   * Clear imported-ids for current folder, then fetch+upsert queue.
+   * Existing Strapi entries matched by brandstorySyncId are updated in place.
+   */
+  async resyncFolder(options: RunImportOptions = {}): Promise<
+    SyncResult & { clearedImportedIds: number; folderPair: string }
+  > {
+    const settings: PluginSettings = await strapi
+      .plugin('brandstory-ai')
+      .service('settings')
+      .get();
+    const { cleared, folderPair } = await this.clearImportedIds(settings);
+    const result = await this.runImport({
+      ...options,
+      source: options.source || 'manual',
+    });
+    return {
+      ...result,
+      clearedImportedIds: cleared,
+      folderPair,
+      message:
+        cleared > 0
+          ? `Cleared ${cleared} imported id(s) for "${folderPair || 'folder'}". ${result.message}`
+          : result.message,
+    };
+  },
+
+  async removeImportedIds(settings: PluginSettings, ids: string[]): Promise<number> {
+    const remove = new Set(ids.map(String).filter(Boolean));
+    if (remove.size === 0) return 0;
+    const store = this.importedStore();
+    const raw = ((await store.get({})) as Record<string, string[]>) || {};
+    const key = this.importedOptionKey(settings);
+    const prev = Array.isArray(raw[key]) ? raw[key].map(String) : [];
+    const next = prev.filter((id) => !remove.has(id));
+    const removed = prev.length - next.length;
+    raw[key] = next;
+    await store.set({ value: raw });
+    return removed;
+  },
+
+  /**
+   * List Strapi entries that already have brandstorySyncId (for select/delete UI).
+   * Merges draft + published by documentId.
+   */
+  async listSyncedEntries(limit = 100): Promise<{
+    entries: Array<{ documentId: string; syncId: string; title: string; status: string }>;
+    trackedImportedIds: number;
+    folderPair: string;
+  }> {
+    const settings: PluginSettings = await strapi
+      .plugin('brandstory-ai')
+      .service('settings')
+      .get();
+    const tracked = await this.getImportedIds(settings);
+    const empty = {
+      entries: [] as Array<{ documentId: string; syncId: string; title: string; status: string }>,
+      trackedImportedIds: tracked.length,
+      folderPair: settings.folderPair || '',
+    };
+
+    const uid = settings.contentTypeUid;
+    if (!uid || !strapi.contentTypes[uid]?.attributes?.[SYNC_ID_FIELD]) {
+      return empty;
+    }
+    const titleField = settings.fieldMap?.title || 'blogTitle';
+    const take = Math.min(200, Math.max(1, limit));
+    const byDoc = new Map<
+      string,
+      { documentId: string; syncId: string; title: string; status: string }
+    >();
+
+    const ingest = (rows: unknown[], status: string) => {
+      for (const row of rows || []) {
+        if (!row || typeof row !== 'object') continue;
+        const r = row as Record<string, unknown>;
+        const syncId = String(r[SYNC_ID_FIELD] || '').trim();
+        const documentId = String(r.documentId || '').trim();
+        if (!syncId || !documentId) continue;
+        const prev = byDoc.get(documentId);
+        // Prefer draft row when both exist.
+        if (prev && prev.status === 'draft') continue;
+        byDoc.set(documentId, {
+          documentId,
+          syncId,
+          title: String(r[titleField] || syncId),
+          status: prev?.status === 'draft' ? 'draft' : status,
+        });
+      }
+    };
+
+    const loadStatus = async (status: 'draft' | 'published') => {
+      try {
+        return await strapi.documents(uid).findMany({
+          filters: { [SYNC_ID_FIELD]: { $notNull: true } },
+          fields: ['documentId', SYNC_ID_FIELD, titleField],
+          status,
+          limit: take,
+        });
+      } catch {
+        try {
+          return await strapi.documents(uid).findMany({
+            fields: ['documentId', SYNC_ID_FIELD, titleField],
+            status,
+            limit: take,
+          });
+        } catch (err) {
+          strapi.log.warn(
+            `[brandstory-ai] listSyncedEntries(${status}) failed: ${
+              err instanceof Error ? err.message : String(err)
+            }`
+          );
+          return [];
+        }
+      }
+    };
+
+    ingest(await loadStatus('published'), 'published');
+    ingest(await loadStatus('draft'), 'draft');
+
+    const entries = Array.from(byDoc.values()).sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: 'base' })
+    );
+
+    return {
+      entries,
+      trackedImportedIds: tracked.length,
+      folderPair: settings.folderPair || '',
+    };
+  },
+
+  /**
+   * Forget selected ids in tracking, fetch Brandstory, upsert only those sync ids.
+   */
+  async resyncBySyncIds(
+    syncIds: string[],
+    options: RunImportOptions = {}
+  ): Promise<
+    SyncResult & {
+      clearedImportedIds: number;
+      missingSyncIds: string[];
+      folderPair: string;
+    }
+  > {
+    const settings: PluginSettings = await strapi
+      .plugin('brandstory-ai')
+      .service('settings')
+      .get();
+    const ids = Array.from(
+      new Set((syncIds || []).map(String).map((s) => s.trim()).filter(Boolean))
+    );
+
+    if (ids.length === 0) {
+      return {
+        inserted: 0,
+        updated: 0,
+        skipped: 0,
+        failed: 0,
+        errors: ['No sync ids provided.'],
+        message: 'No sync ids provided.',
+        entries: [],
+        archiveS3Keys: [],
+        clearedImportedIds: 0,
+        missingSyncIds: [],
+        folderPair: settings.folderPair || '',
+      };
+    }
+
+    const clearedImportedIds = await this.removeImportedIds(settings, ids);
+    const importedIds = await this.getImportedIds(settings);
+    const fetched = await strapi
+      .plugin('brandstory-ai')
+      .service('brandstoryClient')
+      .fetchFullQueue(importedIds);
+
+    if (fetched.error) {
+      return {
+        inserted: 0,
+        updated: 0,
+        skipped: 0,
+        failed: ids.length,
+        errors: [fetched.error],
+        message: fetched.error,
+        entries: [],
+        archiveS3Keys: [],
+        clearedImportedIds,
+        missingSyncIds: ids,
+        folderPair: settings.folderPair || '',
+      };
+    }
+
+    const allow = new Set(ids);
+    const posts = (fetched.posts || []).filter((p) => allow.has(resolveSyncId(p)));
+    const found = new Set(posts.map((p) => resolveSyncId(p)));
+    const missingSyncIds = ids.filter((id) => !found.has(id));
+
+    const result = await this.runImport({
+      ...options,
+      source: options.source || 'manual',
+      posts,
+      files: fetched.files,
+      onlySyncIds: ids,
+    });
+
+    const missingNote =
+      missingSyncIds.length > 0
+        ? ` ${missingSyncIds.length} selected id(s) not returned by Brandstory.`
+        : '';
+
+    return {
+      ...result,
+      clearedImportedIds,
+      missingSyncIds,
+      folderPair: settings.folderPair || '',
+      message: `${result.message}${missingNote}`,
+      errors: [
+        ...result.errors,
+        ...missingSyncIds.map((id) => `${id}: not in Brandstory queue after clearing tracking`),
+      ],
+    };
+  },
+
+  /**
+   * Delete Strapi entries matched by brandstorySyncId. Also drops matching API ids
+   * from the imported-ids store so they can be re-fetched.
+   */
+  async deleteBySyncIds(syncIds: string[]): Promise<{
+    deleted: number;
+    missing: number;
+    removedImportedIds: number;
+    errors: string[];
+    entries: Array<{ syncId: string; documentId?: string; action: 'deleted' | 'missing' | 'error' }>;
+  }> {
+    const settings: PluginSettings = await strapi
+      .plugin('brandstory-ai')
+      .service('settings')
+      .get();
+    const uid = settings.contentTypeUid;
+    const ids = Array.from(new Set((syncIds || []).map(String).map((s) => s.trim()).filter(Boolean)));
+    const result = {
+      deleted: 0,
+      missing: 0,
+      removedImportedIds: 0,
+      errors: [] as string[],
+      entries: [] as Array<{
+        syncId: string;
+        documentId?: string;
+        action: 'deleted' | 'missing' | 'error';
+      }>,
+    };
+
+    if (!uid) {
+      result.errors.push('contentTypeUid is not configured.');
+      return result;
+    }
+    if (!strapi.contentTypes[uid]?.attributes?.[SYNC_ID_FIELD]) {
+      result.errors.push(`Missing field ${SYNC_ID_FIELD} on ${uid}.`);
+      return result;
+    }
+
+    const apiIdsToForget: string[] = [];
+
+    for (const syncId of ids) {
+      try {
+        const existing = await this.findExistingBySyncId(uid, SYNC_ID_FIELD, syncId);
+        if (!existing) {
+          result.missing += 1;
+          result.entries.push({ syncId, action: 'missing' });
+          // Still forget tracking so Brandstory can return it.
+          apiIdsToForget.push(syncId);
+          continue;
+        }
+        await strapi.documents(uid).delete({ documentId: existing.documentId });
+        result.deleted += 1;
+        result.entries.push({
+          syncId,
+          documentId: existing.documentId,
+          action: 'deleted',
+        });
+        apiIdsToForget.push(syncId);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        result.errors.push(`${syncId}: ${msg}`);
+        result.entries.push({ syncId, action: 'error' });
+      }
+    }
+
+    // Also forget plain API ids if they differ from sync_id (queue uses both).
+    result.removedImportedIds = await this.removeImportedIds(settings, apiIdsToForget);
+
+    return result;
+  },
+
   async findExistingBySyncId(
     contentTypeUid: string,
     syncField: string,
@@ -88,11 +400,11 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
   ): Promise<Record<string, unknown>> {
     const fm = settings.fieldMap;
     const title = resolveTitle(item);
-    let content = prepareContentHtml(item);
-    content = await strapi
+    const prepared = prepareContentHtml(item);
+    const { html: content, mediaBySrc } = await strapi
       .plugin('brandstory-ai')
       .service('media')
-      .rewriteInlineDataImages(content, title);
+      .resolveInlineImagesForBlocks(prepared, title);
 
     const syncId = resolveSyncId(item);
     const seoTitle = resolveSeoTitle(item, title);
@@ -123,7 +435,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       if (!ctAttrs[dz.field] || ctAttrs[dz.field].type !== 'dynamiczone') {
         throw new Error(`Dynamic zone field "${dz.field}" missing on ${settings.contentTypeUid}`);
       }
-      const bodyValue = this.formatMappedBody(dz.component, dz.htmlField, content);
+      const bodyValue = this.formatMappedBody(dz.component, dz.htmlField, content, mediaBySrc);
       data[dz.field] = this.mergeDynamicZoneContent(
         existingEntry?.[dz.field],
         dz.component,
@@ -132,7 +444,10 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       );
     } else if (fm.content) {
       const flatType = ctAttrs[fm.content]?.type;
-      writeIfMapped(fm.content, formatBodyForAttributeType(content, flatType));
+      writeIfMapped(
+        fm.content,
+        formatBodyForAttributeType(content, flatType, { mediaBySrc })
+      );
     }
 
     writeIfMapped(fm.excerpt, excerpt);
@@ -171,13 +486,18 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
   /**
    * Convert body HTML to the target component attribute type (blocks vs richtext/text).
    */
-  formatMappedBody(componentUid: string, htmlField: string, html: string): unknown {
+  formatMappedBody(
+    componentUid: string,
+    htmlField: string,
+    html: string,
+    mediaBySrc?: Record<string, Record<string, unknown>>
+  ): unknown {
     const compAttrs = (strapi.components[componentUid]?.attributes || {}) as Record<
       string,
       { type?: string }
     >;
     const attrType = compAttrs[htmlField]?.type;
-    return formatBodyForAttributeType(html, attrType);
+    return formatBodyForAttributeType(html, attrType, { mediaBySrc });
   },
 
   /**
@@ -316,8 +636,14 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       };
     } catch (err) {
       const detail = err instanceof Error ? err.message : String(err);
-      strapi.log.error(`[brandstory-ai] upsert failed for "${title}" (${syncId}): ${detail}`);
-      throw new Error(detail);
+      const extra =
+        err && typeof err === 'object' && 'details' in err
+          ? JSON.stringify((err as { details?: unknown }).details)
+          : '';
+      strapi.log.error(
+        `[brandstory-ai] upsert failed for "${title}" (${syncId}): ${detail}${extra ? ` ${extra}` : ''}`
+      );
+      throw new Error(extra ? `${detail} ${extra}` : detail);
     }
   },
 
@@ -538,14 +864,25 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       else newCount += 1;
     }
 
-    return {
-      error: null,
-      posts: posts.map((p) => ({
+    const previewPosts = [];
+    for (const p of posts) {
+      const syncId = resolveSyncId(p);
+      const existing = syncId
+        ? await this.findExistingBySyncId(settings.contentTypeUid, SYNC_ID_FIELD, syncId)
+        : null;
+      previewPosts.push({
         id: resolveApiId(p),
-        sync_id: resolveSyncId(p),
+        sync_id: syncId,
         title: resolveTitle(p),
         has_content: Boolean(prepareContentHtml(p)),
-      })),
+        existsInStrapi: Boolean(existing),
+        documentId: existing?.documentId || '',
+      });
+    }
+
+    return {
+      error: null,
+      posts: previewPosts,
       files: fetched.files,
       meta: fetched.meta,
       counts: { total: posts.length, new: newCount, update: updateCount },

@@ -161,4 +161,121 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     }
     return out;
   },
+
+  normalizeMediaUrlKey(url: string): string {
+    const s = (url || '').trim();
+    if (!s) return '';
+    try {
+      if (/^https?:\/\//i.test(s)) {
+        return new URL(s).pathname || s;
+      }
+    } catch {
+      // ignore
+    }
+    return s.split('?')[0] || s;
+  },
+
+  async findByUrl(url: string): Promise<UploadedFile | null> {
+    const raw = (url || '').trim();
+    if (!raw) return null;
+    const key = this.normalizeMediaUrlKey(raw);
+    const candidates = Array.from(
+      new Set([raw, key, key.startsWith('/') ? key : `/${key}`].filter(Boolean))
+    );
+
+    try {
+      for (const candidate of candidates) {
+        const exact = await strapi.db.query('plugin::upload.file').findMany({
+          where: { url: candidate },
+          limit: 1,
+        });
+        if (exact?.[0]) return exact[0] as UploadedFile;
+      }
+
+      // Fallback: match by filename suffix (local /uploads/x.png vs absolute CDN URL).
+      const base = key.split('/').filter(Boolean).pop();
+      if (base) {
+        const rows = await strapi.db.query('plugin::upload.file').findMany({
+          where: { url: { $endsWith: base } },
+          limit: 5,
+        });
+        const hit =
+          rows?.find((f: { url?: string }) => this.normalizeMediaUrlKey(f.url || '') === key) ||
+          rows?.[0];
+        if (hit) return hit as UploadedFile;
+      }
+    } catch (err) {
+      strapi.log.warn(
+        `[brandstory-ai] findByUrl failed: ${err instanceof Error ? err.message : String(err)}`
+      );
+    }
+    return null;
+  },
+
+  toBlocksImageMedia(file: UploadedFile): Record<string, unknown> {
+    const now = new Date().toISOString();
+    return {
+      id: file.id,
+      documentId: file.documentId,
+      url: file.url,
+      name: file.name,
+      alternativeText: file.alternativeText ?? null,
+      caption: file.caption ?? null,
+      width: file.width ?? null,
+      height: file.height ?? null,
+      formats: file.formats ?? null,
+      hash: file.hash,
+      ext: file.ext ?? null,
+      mime: file.mime ?? null,
+      size: file.size ?? 0,
+      previewUrl: file.previewUrl ?? null,
+      provider: file.provider ?? 'local',
+      // Blocks image schema requires these timestamps on the embedded media object.
+      createdAt: file.createdAt || now,
+      updatedAt: file.updatedAt || now,
+    };
+  },
+
+  /**
+   * Ensure inline <img> sources exist in Media Library and return a src→media map
+   * for Blocks image nodes.
+   */
+  async resolveInlineImagesForBlocks(
+    html: string,
+    filenameBase: string
+  ): Promise<{ html: string; mediaBySrc: Record<string, Record<string, unknown>> }> {
+    let out = await this.rewriteInlineDataImages(html, filenameBase);
+    const mediaBySrc: Record<string, Record<string, unknown>> = {};
+    if (!out) return { html: out, mediaBySrc };
+
+    const srcs = [
+      ...out.matchAll(/<img\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi),
+    ].map((m) => m[1]?.trim()).filter(Boolean) as string[];
+
+    const unique = Array.from(new Set(srcs));
+    let i = 0;
+    for (const src of unique) {
+      let file: UploadedFile | null = await this.findByUrl(src);
+
+      if (!file && (/^https?:\/\//i.test(src) || src.startsWith('//') || /^data:image\//i.test(src))) {
+        file = await this.uploadFromDataUrlOrUrl(src, `${filenameBase}-inline-${i}`);
+        if (file?.url && file.url !== src) {
+          out = out.split(src).join(file.url);
+        }
+      }
+
+      i += 1;
+      if (!file) continue;
+
+      const media = this.toBlocksImageMedia(file);
+      const keys = new Set(
+        [src, String(file.url || ''), this.normalizeMediaUrlKey(src), this.normalizeMediaUrlKey(String(file.url || ''))].filter(
+          Boolean
+        )
+      );
+      for (const k of keys) mediaBySrc[k] = media;
+    }
+
+    return { html: out, mediaBySrc };
+  },
 });

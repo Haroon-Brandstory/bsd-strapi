@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import {
   Box,
   Button,
@@ -20,6 +27,7 @@ import {
 } from '@strapi/design-system';
 import { Layouts, Page, useFetchClient } from '@strapi/strapi/admin';
 import pluginId from '../pluginId';
+import WarningDialog from '../components/WarningDialog';
 import {
   FIELD_MAP_LABELS,
   SYNC_ID_FIELD,
@@ -48,7 +56,22 @@ type Settings = {
   insertApiUrl?: string;
 };
 
-type QueuePost = { id: string; sync_id: string; title: string; has_content: boolean };
+type QueuePost = {
+  id: string;
+  sync_id: string;
+  title: string;
+  has_content: boolean;
+  existsInStrapi?: boolean;
+  documentId?: string;
+};
+
+type SyncedEntry = {
+  documentId: string;
+  syncId: string;
+  title: string;
+  status?: string;
+};
+
 type SyncLog = {
   documentId: string;
   source: string;
@@ -60,6 +83,17 @@ type SyncLog = {
   failed: number;
   durationMs?: number;
   createdAt?: string;
+};
+
+type MainTab = 'settings' | 'import-queue' | 'imported' | 'logs';
+
+type PendingConfirm = {
+  title: string;
+  description: string;
+  note: string;
+  confirmLabel: string;
+  variant: 'danger' | 'default' | 'secondary';
+  run: () => Promise<void>;
 };
 
 const emptyFieldMap: FieldMap = {
@@ -131,6 +165,53 @@ const FieldSelect = ({
   </Field.Root>
 );
 
+const formatImportResult = (data: {
+  message?: string;
+  errors?: string[];
+  missingSyncIds?: string[];
+}) => {
+  const parts = [data.message || ''];
+  if (data.missingSyncIds?.length) {
+    parts.push(`Missing from Brandstory: ${data.missingSyncIds.join(', ')}`);
+  }
+  if (data.errors?.length) {
+    parts.push(`Errors: ${data.errors.join('; ')}`);
+  }
+  return parts.filter(Boolean).join('\n');
+};
+
+/** Normalize /synced-entries payloads across HMR / older server shapes. */
+function normalizeSyncedPayload(raw: unknown): {
+  entries: SyncedEntry[];
+  trackedImportedIds: number;
+} {
+  if (Array.isArray(raw)) {
+    return { entries: raw as SyncedEntry[], trackedImportedIds: 0 };
+  }
+  if (!raw || typeof raw !== 'object') {
+    return { entries: [], trackedImportedIds: 0 };
+  }
+  const obj = raw as Record<string, unknown>;
+  // Correct shape: { entries: SyncedEntry[], trackedImportedIds }
+  if (Array.isArray(obj.entries)) {
+    return {
+      entries: obj.entries as SyncedEntry[],
+      trackedImportedIds: Number(obj.trackedImportedIds) || 0,
+    };
+  }
+  // Mismatch shape from stale controller wrapping: { entries: { entries, trackedImportedIds } }
+  if (obj.entries && typeof obj.entries === 'object' && !Array.isArray(obj.entries)) {
+    const nested = obj.entries as Record<string, unknown>;
+    if (Array.isArray(nested.entries)) {
+      return {
+        entries: nested.entries as SyncedEntry[],
+        trackedImportedIds: Number(nested.trackedImportedIds ?? obj.trackedImportedIds) || 0,
+      };
+    }
+  }
+  return { entries: [], trackedImportedIds: Number(obj.trackedImportedIds) || 0 };
+}
+
 const HomePage = () => {
   const { get, post, put } = useFetchClient();
   const apiPrefix = `/admin/${pluginId}`;
@@ -148,7 +229,7 @@ const HomePage = () => {
     return res.data as T;
   };
 
-  const [tab, setTab] = useState<'settings' | 'queue' | 'logs'>('settings');
+  const [tab, setTab] = useState<MainTab>('settings');
   const [settings, setSettings] = useState<Settings>(emptySettings);
   const [contentTypes, setContentTypes] = useState<ContentTypeInfo[]>([]);
   const [components, setComponents] = useState<ComponentInfo[]>([]);
@@ -165,8 +246,13 @@ const HomePage = () => {
     new: number;
     update: number;
   } | null>(null);
-  const [importResult, setImportResult] = useState('');
+  const [syncedEntries, setSyncedEntries] = useState<SyncedEntry[]>([]);
+  const [trackedImportedIds, setTrackedImportedIds] = useState(0);
+  const [selectedQueueIds, setSelectedQueueIds] = useState<string[]>([]);
+  const [selectedImportedIds, setSelectedImportedIds] = useState<string[]>([]);
+  const [actionResult, setActionResult] = useState('');
   const [logs, setLogs] = useState<SyncLog[]>([]);
+  const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm | null>(null);
 
   const show = (text: string, variant: 'success' | 'danger' | 'default' = 'default') => {
     setStatusMsg({ text, variant });
@@ -203,6 +289,24 @@ const HomePage = () => {
       ['richtext', 'text', 'string', 'blocks', 'customField', 'json'].includes(a.type)
     );
   }, [selectedComponent]);
+
+  const safeQueuePosts = Array.isArray(queuePosts) ? queuePosts : [];
+  const safeSyncedEntries = Array.isArray(syncedEntries) ? syncedEntries : [];
+
+  const queueSyncIds = useMemo(
+    () => safeQueuePosts.map((p) => p.sync_id).filter(Boolean),
+    [safeQueuePosts]
+  );
+  const importedSyncIds = useMemo(
+    () => safeSyncedEntries.map((e) => e.syncId).filter(Boolean),
+    [safeSyncedEntries]
+  );
+
+  const allQueueSelected =
+    queueSyncIds.length > 0 && queueSyncIds.every((id) => selectedQueueIds.includes(id));
+  const allImportedSelected =
+    importedSyncIds.length > 0 &&
+    importedSyncIds.every((id) => selectedImportedIds.includes(id));
 
   const loadSettings = useCallback(async () => {
     try {
@@ -251,14 +355,49 @@ const HomePage = () => {
     }
   }, [get]);
 
+  const loadSyncedEntries = useCallback(async () => {
+    try {
+      const data = await apiGet<unknown>('/synced-entries?limit=200');
+      const { entries, trackedImportedIds: tracked } = normalizeSyncedPayload(data);
+      setSyncedEntries(entries);
+      setTrackedImportedIds(tracked);
+      setSelectedImportedIds((prev) =>
+        prev.filter((id) => entries.some((e) => e.syncId === id))
+      );
+    } catch {
+      setSyncedEntries([]);
+      setTrackedImportedIds(0);
+    }
+  }, [get]);
+
+  const fetchQueueSilent = useCallback(async () => {
+    const data = await apiPost<{
+      error?: string;
+      posts?: QueuePost[];
+      counts?: { total: number; new: number; update: number };
+    }>('/fetch');
+    if (data.error) {
+      setQueuePosts([]);
+      setQueueCounts(null);
+      return data;
+    }
+    const posts = Array.isArray(data.posts) ? data.posts : [];
+    setQueuePosts(posts);
+    setQueueCounts(data.counts || null);
+    setSelectedQueueIds((prev) => prev.filter((id) => posts.some((p) => p.sync_id === id)));
+    return data;
+  }, [post]);
+
   useEffect(() => {
     loadSettings();
     loadContentTypes();
   }, [loadSettings, loadContentTypes]);
 
   useEffect(() => {
+    setActionResult('');
     if (tab === 'logs') loadLogs();
-  }, [tab, loadLogs]);
+    if (tab === 'imported' || tab === 'import-queue') loadSyncedEntries();
+  }, [tab, loadLogs, loadSyncedEntries]);
 
   const applyAutoMap = (uid: string, cts = contentTypes, comps = components) => {
     const ct = cts.find((c) => c.uid === uid);
@@ -304,7 +443,10 @@ const HomePage = () => {
       setConnStatus(data.ok ? `Connected — ${data.message}` : `Failed — ${data.message}`);
       show(data.message, data.ok ? 'success' : 'danger');
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Connection test failed';
+      const raw = e instanceof Error ? e.message : 'Connection test failed';
+      const msg = /signal is aborted|aborted without reason|AbortError/i.test(raw)
+        ? 'Request cancelled or timed out. Save settings, wait for reload to finish, then Test connection again.'
+        : raw;
       setConnStatus(`Failed — ${msg}`);
       show(msg, 'danger');
     } finally {
@@ -333,22 +475,14 @@ const HomePage = () => {
 
   const refreshQueue = async () => {
     setBusy(true);
-    setImportResult('');
+    setActionResult('');
     try {
       await apiPut('/settings', settings);
-      const data = await apiPost<{
-        error?: string;
-        posts?: QueuePost[];
-        counts?: { total: number; new: number; update: number };
-      }>('/fetch');
+      const data = await fetchQueueSilent();
       if (data.error) {
         show(data.error, 'danger');
-        setQueuePosts([]);
-        setQueueCounts(null);
         return;
       }
-      setQueuePosts(data.posts || []);
-      setQueueCounts(data.counts || null);
       show(`Queue refreshed: ${data.counts?.total ?? 0} item(s).`, 'success');
     } catch (e) {
       show(e instanceof Error ? e.message : 'Refresh failed', 'danger');
@@ -357,27 +491,214 @@ const HomePage = () => {
     }
   };
 
-  const runImport = async () => {
+  const toggleId = (syncId: string, setter: Dispatch<SetStateAction<string[]>>) => {
+    if (!syncId) return;
+    setter((prev) =>
+      prev.includes(syncId) ? prev.filter((id) => id !== syncId) : [...prev, syncId]
+    );
+  };
+
+  const runImport = async (onlySyncIds?: string[]) => {
+    if (onlySyncIds && onlySyncIds.length === 0) return;
     setBusy(true);
+    setActionResult('');
     try {
+      await apiPut('/settings', settings);
       const data = await apiPost<{
         message: string;
         inserted: number;
         updated: number;
         failed: number;
         errors: string[];
-      }>('/import', { publishStatus: settings.defaultPublishStatus });
-      setImportResult(
-        `${data.message}${data.errors?.length ? ` Errors: ${data.errors.join('; ')}` : ''}`
-      );
+      }>('/import', {
+        publishStatus: settings.defaultPublishStatus,
+        ...(onlySyncIds?.length ? { onlySyncIds } : {}),
+      });
+      setActionResult(formatImportResult(data));
       show(data.message, data.failed > 0 ? 'danger' : 'success');
-      await refreshQueue();
-      if (tab === 'logs') await loadLogs();
+      setSelectedQueueIds([]);
+      await fetchQueueSilent();
+      await loadSyncedEntries();
     } catch (e) {
       show(e instanceof Error ? e.message : 'Import failed', 'danger');
     } finally {
       setBusy(false);
     }
+  };
+
+  const askImportAll = () => {
+    if (safeQueuePosts.length === 0) return;
+    setPendingConfirm({
+      title: 'Import all queued posts?',
+      description: `Import ${safeQueuePosts.length} post(s) from the Brandstory queue into Strapi.`,
+      note: 'Existing entries with the same brandstorySyncId will be overwritten (upsert). New posts will be created.',
+      confirmLabel: 'Import all',
+      variant: 'default',
+      run: () => runImport(),
+    });
+  };
+
+  const askImportSelected = () => {
+    if (selectedQueueIds.length === 0) return;
+    setPendingConfirm({
+      title: 'Import selected posts?',
+      description: `Import ${selectedQueueIds.length} selected post(s) from the queue.`,
+      note: 'Matching Strapi entries will be updated in place by brandstorySyncId.',
+      confirmLabel: 'Import selected',
+      variant: 'default',
+      run: () => runImport(selectedQueueIds),
+    });
+  };
+
+  const doClearImportedIds = async () => {
+    const folder = settings.folderPair || 'current folder';
+    setBusy(true);
+    setActionResult('');
+    try {
+      await apiPut('/settings', settings);
+      const data = await apiPost<{ cleared: number; folderPair: string }>('/clear-imported-ids');
+      const msg = `Cleared ${data.cleared} imported id(s) for "${data.folderPair || folder}".`;
+      setActionResult(msg);
+      show(msg, 'success');
+      await fetchQueueSilent();
+      await loadSyncedEntries();
+    } catch (e) {
+      show(e instanceof Error ? e.message : 'Clear imported IDs failed', 'danger');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const askClearImportedIds = () => {
+    const folder = settings.folderPair || 'current folder';
+    setPendingConfirm({
+      title: 'Clear imported IDs?',
+      description: `Reset Brandstory tracking for folder "${folder}" so those posts can appear in the Import queue again.`,
+      note: 'This does NOT delete Strapi blog entries. It only clears the plugin imported-ids list for this folder.',
+      confirmLabel: 'Clear imported IDs',
+      variant: 'secondary',
+      run: doClearImportedIds,
+    });
+  };
+
+  const doDeleteImportedSelected = async () => {
+    if (selectedImportedIds.length === 0) return;
+    setBusy(true);
+    setActionResult('');
+    try {
+      const data = await apiPost<{
+        deleted: number;
+        missing: number;
+        errors: string[];
+      }>('/delete-by-sync-ids', { syncIds: selectedImportedIds });
+      const msg = `Deleted ${data.deleted}, missing ${data.missing}.${
+        data.errors?.length ? `\nErrors: ${data.errors.join('; ')}` : ''
+      }`;
+      setActionResult(msg);
+      show(
+        `Deleted ${data.deleted} entr${data.deleted === 1 ? 'y' : 'ies'}.`,
+        data.errors?.length ? 'danger' : 'success'
+      );
+      setSelectedImportedIds([]);
+      await loadSyncedEntries();
+      await fetchQueueSilent();
+    } catch (e) {
+      show(e instanceof Error ? e.message : 'Delete failed', 'danger');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const askDeleteImportedSelected = () => {
+    if (selectedImportedIds.length === 0) return;
+    setPendingConfirm({
+      title: 'Delete selected Strapi entries?',
+      description: `Permanently delete ${selectedImportedIds.length} entr${
+        selectedImportedIds.length === 1 ? 'y' : 'ies'
+      } matched by brandstorySyncId.`,
+      note: 'This cannot be undone from Strapi. Imported-id tracking for those items is also cleared so they can be re-fetched later.',
+      confirmLabel: 'Delete selected',
+      variant: 'danger',
+      run: doDeleteImportedSelected,
+    });
+  };
+
+  const doResyncImportedSelected = async () => {
+    if (selectedImportedIds.length === 0) return;
+    setBusy(true);
+    setActionResult('');
+    try {
+      await apiPut('/settings', settings);
+      const data = await apiPost<{
+        message: string;
+        inserted: number;
+        updated: number;
+        failed: number;
+        errors: string[];
+        missingSyncIds?: string[];
+      }>('/resync-by-sync-ids', {
+        syncIds: selectedImportedIds,
+        publishStatus: settings.defaultPublishStatus,
+      });
+      setActionResult(formatImportResult(data));
+      const softFail = (data.failed || 0) > 0 || (data.missingSyncIds?.length || 0) > 0;
+      show(data.message, softFail ? 'danger' : 'success');
+      setSelectedImportedIds([]);
+      await loadSyncedEntries();
+      await fetchQueueSilent();
+    } catch (e) {
+      show(e instanceof Error ? e.message : 'Re-sync selected failed', 'danger');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const askResyncImportedSelected = () => {
+    if (selectedImportedIds.length === 0) return;
+    setPendingConfirm({
+      title: 'Re-sync selected entries?',
+      description: `Pull ${selectedImportedIds.length} selected post(s) from Brandstory and upsert into Strapi by brandstorySyncId.`,
+      note: 'Body, images, and mapped fields for those entries will be overwritten. Sibling dynamic-zone components are kept.',
+      confirmLabel: 'Re-sync selected',
+      variant: 'danger',
+      run: doResyncImportedSelected,
+    });
+  };
+
+  const doResyncFolder = async () => {
+    setBusy(true);
+    setActionResult('');
+    try {
+      await apiPut('/settings', settings);
+      const data = await apiPost<{
+        message: string;
+        inserted: number;
+        updated: number;
+        failed: number;
+        errors: string[];
+      }>('/resync-folder', { publishStatus: settings.defaultPublishStatus });
+      setActionResult(formatImportResult(data));
+      show(data.message, data.failed > 0 ? 'danger' : 'success');
+      setSelectedImportedIds([]);
+      await loadSyncedEntries();
+      await fetchQueueSilent();
+    } catch (e) {
+      show(e instanceof Error ? e.message : 'Re-sync folder failed', 'danger');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const askResyncFolder = () => {
+    const folder = settings.folderPair || 'current folder';
+    setPendingConfirm({
+      title: 'Re-sync entire folder?',
+      description: `Clear imported IDs for "${folder}", fetch all posts Brandstory returns for that folder, then upsert every one into Strapi.`,
+      note: 'This can overwrite many existing blog bodies/images at once. It does not delete Strapi entries first. Prefer Re-sync selected if you only need a few posts.',
+      confirmLabel: 'Re-sync entire folder',
+      variant: 'danger',
+      run: doResyncFolder,
+    });
   };
 
   const setField = (key: keyof Settings, value: string | number) => {
@@ -390,32 +711,43 @@ const HomePage = () => {
 
   const optionLabel = (a: AttrInfo) => `${a.name} (${a.type}${a.multiple ? ', multi' : ''})`;
 
+  const navBtn = (id: MainTab, label: string) => (
+    <Button variant={tab === id ? 'default' : 'tertiary'} onClick={() => setTab(id)}>
+      {label}
+    </Button>
+  );
+
   return (
     <Page.Main>
       <Layouts.Header
         title="Brandstory AI"
         subtitle="Sync Brandstory AI CONTENT FACTORY blogs into Strapi"
         primaryAction={
-          <Flex gap={2}>
-            <Button
-              variant={tab === 'settings' ? 'default' : 'tertiary'}
-              onClick={() => setTab('settings')}
-            >
-              Settings
-            </Button>
-            <Button
-              variant={tab === 'queue' ? 'default' : 'tertiary'}
-              onClick={() => setTab('queue')}
-            >
-              Content queue
-            </Button>
-            <Button variant={tab === 'logs' ? 'default' : 'tertiary'} onClick={() => setTab('logs')}>
-              Sync logs
-            </Button>
+          <Flex gap={2} wrap="wrap">
+            {navBtn('settings', 'Settings')}
+            {navBtn('import-queue', 'Import queue')}
+            {navBtn('imported', 'Imported')}
+            {navBtn('logs', 'Sync logs')}
           </Flex>
         }
       />
       <Layouts.Content>
+        <WarningDialog
+          open={Boolean(pendingConfirm)}
+          title={pendingConfirm?.title || ''}
+          description={pendingConfirm?.description || ''}
+          note={pendingConfirm?.note}
+          confirmLabel={pendingConfirm?.confirmLabel}
+          variant={pendingConfirm?.variant || 'danger'}
+          loading={busy}
+          onConfirm={async () => {
+            if (pendingConfirm) await pendingConfirm.run();
+          }}
+          onOpenChange={(open) => {
+            if (!open && !busy) setPendingConfirm(null);
+          }}
+        />
+
         {statusMsg && (
           <Box paddingBottom={4}>
             <Alert
@@ -704,17 +1036,17 @@ const HomePage = () => {
 
               {settings.contentTypeUid &&
                 !selectedCt?.attributes?.some((a) => a.name === SYNC_ID_FIELD) && (
-                <Box padding={3} background="danger100" hasRadius>
-                  <Typography textColor="danger700">
-                    Missing required field{' '}
-                    <Typography as="span" fontWeight="bold">
-                      {SYNC_ID_FIELD}
-                    </Typography>{' '}
-                    on this content type (unique string). Create it in Content-Type Builder, then
-                    reload settings.
-                  </Typography>
-                </Box>
-              )}
+                  <Box padding={3} background="danger100" hasRadius>
+                    <Typography textColor="danger700">
+                      Missing required field{' '}
+                      <Typography as="span" fontWeight="bold">
+                        {SYNC_ID_FIELD}
+                      </Typography>{' '}
+                      on this content type (unique string). Create it in Content-Type Builder, then
+                      reload settings.
+                    </Typography>
+                  </Box>
+                )}
 
               {settings.contentMode === 'dynamiczone' &&
                 settings.dynamicZone.field &&
@@ -740,34 +1072,81 @@ const HomePage = () => {
           </Box>
         )}
 
-        {tab === 'queue' && (
+        {tab === 'import-queue' && (
           <Box background="neutral0" padding={6} hasRadius shadow="filterShadow">
-            <Typography variant="delta">Content queue</Typography>
-            <Box paddingTop={2} paddingBottom={4}>
+            <Typography variant="delta">Import queue</Typography>
+            <Box paddingTop={2} paddingBottom={3}>
               <Typography variant="pi" textColor="neutral600">
-                {queueCounts
-                  ? `Total ${queueCounts.total} · new ${queueCounts.new} · update ${queueCounts.update}`
-                  : 'Click Refresh from API to load the queue.'}
+                Fetch posts from Brandstory for the configured folder, then import into Strapi.
+                Existing entries with the same {SYNC_ID_FIELD} are updated (upsert).
               </Typography>
             </Box>
-            <Flex gap={2} paddingBottom={4}>
+            <Box paddingBottom={4}>
+              <Typography variant="pi" textColor="neutral600">
+                {queueCounts
+                  ? `Queue: ${queueCounts.total} · new ${queueCounts.new} · already in Strapi ${queueCounts.update}`
+                  : 'Click Refresh queue to load posts from Brandstory.'}
+                {trackedImportedIds > 0
+                  ? ` · Tracking ${trackedImportedIds} imported id(s) for this folder.`
+                  : ''}
+              </Typography>
+            </Box>
+
+            <Flex gap={2} paddingBottom={3} wrap="wrap">
               <Button onClick={refreshQueue} loading={busy} variant="secondary">
-                Refresh from API
+                Refresh queue
               </Button>
-              <Button onClick={runImport} loading={busy} disabled={queuePosts.length === 0}>
-                Import queued posts
+              <Button
+                onClick={askImportAll}
+                loading={busy}
+                disabled={safeQueuePosts.length === 0}
+              >
+                Import all in queue
+              </Button>
+              <Button
+                onClick={askImportSelected}
+                loading={busy}
+                disabled={selectedQueueIds.length === 0}
+              >
+                Import selected ({selectedQueueIds.length})
+              </Button>
+              <Button onClick={askClearImportedIds} loading={busy} variant="tertiary">
+                Clear imported IDs
               </Button>
             </Flex>
-            {importResult && (
+
+            <Box paddingBottom={4}>
+              <Typography variant="pi" textColor="neutral600">
+                Queue empty after a prior import? Use Clear imported IDs, then Refresh queue.
+                That only resets tracking — it does not delete Strapi content.
+              </Typography>
+            </Box>
+
+            {actionResult && (
               <Box paddingBottom={4}>
-                <Textarea value={importResult} readOnly />
+                <Textarea value={actionResult} readOnly style={{ minHeight: 72 }} />
               </Box>
             )}
-            <Table colCount={3} rowCount={queuePosts.length}>
+
+            <Table colCount={5} rowCount={Math.max(safeQueuePosts.length, 1)}>
               <Thead>
                 <Tr>
                   <Th>
+                    <input
+                      type="checkbox"
+                      checked={allQueueSelected}
+                      disabled={queueSyncIds.length === 0}
+                      onChange={() =>
+                        setSelectedQueueIds(allQueueSelected ? [] : queueSyncIds)
+                      }
+                      aria-label="Select all queue posts"
+                    />
+                  </Th>
+                  <Th>
                     <Typography variant="sigma">Title</Typography>
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma">In Strapi</Typography>
                   </Th>
                   <Th>
                     <Typography variant="sigma">Sync ID</Typography>
@@ -778,24 +1157,184 @@ const HomePage = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {queuePosts.map((p) => (
+                {safeQueuePosts.map((p) => (
                   <Tr key={p.sync_id || p.id}>
                     <Td>
+                      <input
+                        type="checkbox"
+                        checked={selectedQueueIds.includes(p.sync_id)}
+                        onChange={() => toggleId(p.sync_id, setSelectedQueueIds)}
+                        aria-label={`Select ${p.title}`}
+                      />
+                    </Td>
+                    <Td>
                       <Typography>{p.title}</Typography>
+                      {!p.has_content && (
+                        <Typography variant="pi" textColor="warning600">
+                          No content payload
+                        </Typography>
+                      )}
                     </Td>
                     <Td>
-                      <Typography textColor="neutral600">{p.sync_id}</Typography>
+                      <Typography textColor={p.existsInStrapi ? 'success600' : 'neutral600'}>
+                        {p.existsInStrapi ? 'Yes (will update)' : 'No (will insert)'}
+                      </Typography>
                     </Td>
                     <Td>
-                      <Typography textColor="neutral600">{p.id}</Typography>
+                      <Typography textColor="neutral600" variant="pi">
+                        {p.sync_id}
+                      </Typography>
+                    </Td>
+                    <Td>
+                      <Typography textColor="neutral600" variant="pi">
+                        {p.id}
+                      </Typography>
                     </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
-            {queuePosts.length === 0 && (
+            {safeQueuePosts.length === 0 && (
               <Box paddingTop={4}>
-                <Typography textColor="neutral600">No items in queue.</Typography>
+                <Typography textColor="neutral600">
+                  No items in queue. Refresh queue, or Clear imported IDs if posts were already
+                  tracked.
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        )}
+
+        {tab === 'imported' && (
+          <Box background="neutral0" padding={6} hasRadius shadow="filterShadow">
+            <Typography variant="delta">Imported in Strapi</Typography>
+            <Box paddingTop={2} paddingBottom={3}>
+              <Typography variant="pi" textColor="neutral600">
+                Manage entries that already have {SYNC_ID_FIELD}. Select rows to delete or re-sync
+                (upsert from Brandstory without deleting first).
+              </Typography>
+            </Box>
+            <Box paddingBottom={4}>
+              <Typography variant="pi" textColor="neutral600">
+                {safeSyncedEntries.length} synced entr
+                {safeSyncedEntries.length === 1 ? 'y' : 'ies'}
+                {settings.folderPair ? ` · folder tracking: ${trackedImportedIds} id(s)` : ''}
+              </Typography>
+            </Box>
+
+            <Flex gap={2} paddingBottom={3} wrap="wrap">
+              <Button onClick={loadSyncedEntries} loading={busy} variant="secondary">
+                Refresh list
+              </Button>
+              <Button
+                onClick={askResyncImportedSelected}
+                loading={busy}
+                disabled={selectedImportedIds.length === 0}
+              >
+                Re-sync selected ({selectedImportedIds.length})
+              </Button>
+              <Button
+                onClick={askDeleteImportedSelected}
+                loading={busy}
+                variant="danger"
+                disabled={selectedImportedIds.length === 0}
+              >
+                Delete selected ({selectedImportedIds.length})
+              </Button>
+              <Button onClick={askResyncFolder} loading={busy} variant="danger-light">
+                Re-sync entire folder
+              </Button>
+            </Flex>
+
+            <Box paddingBottom={4}>
+              <Typography variant="pi" textColor="neutral600">
+                Re-sync selected updates body/images in place. Delete selected removes Strapi
+                entries only for chosen sync ids. Re-sync entire folder affects the whole
+                configured folder queue.
+              </Typography>
+            </Box>
+
+            {actionResult && (
+              <Box paddingBottom={4}>
+                <Textarea value={actionResult} readOnly style={{ minHeight: 72 }} />
+              </Box>
+            )}
+
+            <Table colCount={5} rowCount={Math.max(safeSyncedEntries.length, 1)}>
+              <Thead>
+                <Tr>
+                  <Th>
+                    <input
+                      type="checkbox"
+                      checked={allImportedSelected}
+                      disabled={importedSyncIds.length === 0}
+                      onChange={() =>
+                        setSelectedImportedIds(allImportedSelected ? [] : importedSyncIds)
+                      }
+                      aria-label="Select all imported entries"
+                    />
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma">Title</Typography>
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma">Status</Typography>
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma">Sync ID</Typography>
+                  </Th>
+                  <Th>
+                    <Typography variant="sigma">Document</Typography>
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {safeSyncedEntries.map((e) => (
+                  <Tr key={e.documentId || e.syncId}>
+                    <Td>
+                      <input
+                        type="checkbox"
+                        checked={selectedImportedIds.includes(e.syncId)}
+                        onChange={() => toggleId(e.syncId, setSelectedImportedIds)}
+                        aria-label={`Select ${e.title}`}
+                      />
+                    </Td>
+                    <Td>
+                      <Typography>{e.title}</Typography>
+                    </Td>
+                    <Td>
+                      <Typography textColor="neutral600">{e.status || '—'}</Typography>
+                    </Td>
+                    <Td>
+                      <Typography textColor="neutral600" variant="pi">
+                        {e.syncId}
+                      </Typography>
+                    </Td>
+                    <Td>
+                      {e.documentId && settings.contentTypeUid ? (
+                        <Typography>
+                          <a
+                            href={`/admin/content-manager/collection-types/${settings.contentTypeUid}/${e.documentId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Open
+                          </a>
+                        </Typography>
+                      ) : (
+                        <Typography textColor="neutral600">—</Typography>
+                      )}
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+            {safeSyncedEntries.length === 0 && (
+              <Box paddingTop={4}>
+                <Typography textColor="neutral600">
+                  No synced Strapi entries found for this content type. Import from Import queue
+                  first.
+                </Typography>
               </Box>
             )}
           </Box>
@@ -809,7 +1348,7 @@ const HomePage = () => {
                 Refresh
               </Button>
             </Flex>
-            <Table colCount={6} rowCount={logs.length}>
+            <Table colCount={6} rowCount={Math.max(logs.length, 1)}>
               <Thead>
                 <Tr>
                   <Th>

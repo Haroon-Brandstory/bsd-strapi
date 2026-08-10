@@ -10,6 +10,11 @@ type FetchResult = {
 };
 
 const LIST_LIMIT = 15;
+const TEST_TIMEOUT_MS = 60000;
+const LIST_TIMEOUT_MS = 60000;
+const QUEUE_TIMEOUT_MS = 180000;
+const DETAIL_TIMEOUT_MS = 120000;
+const ARCHIVE_TIMEOUT_MS = 60000;
 
 function authHeaders(settings: PluginSettings): Record<string, string> {
   const headers: Record<string, string> = {
@@ -21,6 +26,19 @@ function authHeaders(settings: PluginSettings): Record<string, string> {
     headers['X-API-Key'] = settings.apiKey;
   }
   return headers;
+}
+
+function formatFetchError(err: unknown, label: string, timeoutMs: number): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  const name = err instanceof Error ? err.name : '';
+  if (
+    name === 'TimeoutError' ||
+    name === 'AbortError' ||
+    /signal is aborted|aborted without reason|The operation was aborted/i.test(msg)
+  ) {
+    return `${label} timed out after ${Math.round(timeoutMs / 1000)}s. Brandstory API slow or unreachable — retry, or check site URL / network.`;
+  }
+  return msg;
 }
 
 async function parseJson(res: Response): Promise<Record<string, unknown>> {
@@ -67,7 +85,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       const res = await fetch(url.toString(), {
         method: 'GET',
         headers: authHeaders(settings),
-        signal: AbortSignal.timeout(30000),
+        signal: AbortSignal.timeout(TEST_TIMEOUT_MS),
       });
       if (!res.ok) {
         return { ok: false, message: `Insert API returned HTTP ${res.status}` };
@@ -78,7 +96,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
       }
       return { ok: false, message: 'Invalid API response' };
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg = formatFetchError(err, 'Connection test', TEST_TIMEOUT_MS);
       return { ok: false, message: this.augmentLoopbackHint(msg, settings.siteUrl) };
     }
   },
@@ -93,7 +111,9 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     })();
     const isLoopback = host === 'localhost' || host === '127.0.0.1';
     const connFailed =
-      /fetch failed|ECONNREFUSED|ENOTFOUND|couldn't connect|failed to connect/i.test(message);
+      /fetch failed|ECONNREFUSED|ENOTFOUND|couldn't connect|failed to connect|timed out/i.test(
+        message
+      );
     if (isLoopback && connFailed) {
       return `${message} Strapi calls this URL from the server process — localhost is the Strapi host, not your laptop. Use a LAN IP, tunnel, or production origin.`;
     }
@@ -109,11 +129,21 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     const url = new URL(listUrl);
     url.searchParams.set('firebaseUid', settings.firebaseUid);
 
-    const res = await fetch(url.toString(), {
-      method: 'GET',
-      headers: authHeaders(settings),
-      signal: AbortSignal.timeout(45000),
-    });
+    let res: Response;
+    try {
+      res = await fetch(url.toString(), {
+        method: 'GET',
+        headers: authHeaders(settings),
+        signal: AbortSignal.timeout(LIST_TIMEOUT_MS),
+      });
+    } catch (err) {
+      throw new Error(
+        this.augmentLoopbackHint(
+          formatFetchError(err, 'Folder list', LIST_TIMEOUT_MS),
+          settings.siteUrl
+        )
+      );
+    }
     if (!res.ok) {
       throw new Error(`List API returned HTTP ${res.status}`);
     }
@@ -151,7 +181,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         method: 'POST',
         headers: authHeaders(settings),
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(120000),
+        signal: AbortSignal.timeout(QUEUE_TIMEOUT_MS),
       });
       if (!res.ok) {
         return {
@@ -168,7 +198,7 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         files: [],
         meta: {},
         error: this.augmentLoopbackHint(
-          err instanceof Error ? err.message : String(err),
+          formatFetchError(err, 'Queue fetch', QUEUE_TIMEOUT_MS),
           settings.siteUrl
         ),
       };
@@ -253,11 +283,16 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     settings: PluginSettings
   ): Promise<BrandstoryPost | null> {
     const detailUrl = `${insertApiUrl.replace(/\/+$/, '')}/${encodeURIComponent(contentId)}`;
-    const res = await fetch(detailUrl, {
-      method: 'GET',
-      headers: authHeaders(settings),
-      signal: AbortSignal.timeout(90000),
-    });
+    let res: Response;
+    try {
+      res = await fetch(detailUrl, {
+        method: 'GET',
+        headers: authHeaders(settings),
+        signal: AbortSignal.timeout(DETAIL_TIMEOUT_MS),
+      });
+    } catch (err) {
+      throw new Error(formatFetchError(err, `Detail ${contentId}`, DETAIL_TIMEOUT_MS));
+    }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await parseJson(res);
     if (!data.success || !data.post || typeof data.post !== 'object') {
@@ -320,14 +355,14 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         method: 'POST',
         headers,
         body: JSON.stringify({ keys: filtered }),
-        signal: AbortSignal.timeout(60000),
+        signal: AbortSignal.timeout(ARCHIVE_TIMEOUT_MS),
       });
       if (!res.ok) {
         strapi.log.warn(`[brandstory-ai] archive POST HTTP ${res.status}`);
       }
     } catch (err) {
       strapi.log.warn(
-        `[brandstory-ai] archive POST failed: ${err instanceof Error ? err.message : String(err)}`
+        `[brandstory-ai] archive POST failed: ${formatFetchError(err, 'Archive', ARCHIVE_TIMEOUT_MS)}`
       );
     }
   },

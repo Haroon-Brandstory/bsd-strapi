@@ -44,6 +44,36 @@ export default {
       config: { policies: [] },
     },
     {
+      method: 'POST',
+      path: '/clear-imported-ids',
+      handler: 'brandstory.clearImportedIds',
+      config: { policies: [] },
+    },
+    {
+      method: 'POST',
+      path: '/resync-folder',
+      handler: 'brandstory.resyncFolder',
+      config: { policies: [] },
+    },
+    {
+      method: 'GET',
+      path: '/synced-entries',
+      handler: 'brandstory.listSyncedEntries',
+      config: { policies: [] },
+    },
+    {
+      method: 'POST',
+      path: '/resync-by-sync-ids',
+      handler: 'brandstory.resyncBySyncIds',
+      config: { policies: [] },
+    },
+    {
+      method: 'POST',
+      path: '/delete-by-sync-ids',
+      handler: 'brandstory.deleteBySyncIds',
+      config: { policies: [] },
+    },
+    {
       method: 'GET',
       path: '/logs',
       handler: 'brandstory.listLogs',

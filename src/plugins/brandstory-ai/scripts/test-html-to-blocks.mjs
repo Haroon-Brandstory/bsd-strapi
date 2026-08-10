@@ -1,39 +1,16 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
-import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const require = createRequire(import.meta.url);
-
-// Load TS via ts-node/register if available; else run a tiny inline mirror.
-// Prefer compiling through a simple dynamic import of the built logic by duplicating call via tsx-less eval.
 
 async function main() {
-  let htmlToBlocks;
-  let formatBodyForAttributeType;
-  try {
-    // When Strapi compiles plugin TS into dist, this may exist; for local plugin source use transpile.
-    const mod = await import('../server/src/services/html-to-blocks.ts').catch(() => null);
-    if (mod) {
-      htmlToBlocks = mod.htmlToBlocks;
-      formatBodyForAttributeType = mod.formatBodyForAttributeType;
-    }
-  } catch {
-    // ignore
-  }
-
-  if (!htmlToBlocks) {
-    // Fallback: spawn node with --experimental-strip-types if Node 22+
-    const { pathToFileURL } = await import('node:url');
-    const file = pathToFileURL(
-      path.join(__dirname, '../server/src/services/html-to-blocks.ts')
-    ).href;
-    const mod = await import(file);
-    htmlToBlocks = mod.htmlToBlocks;
-    formatBodyForAttributeType = mod.formatBodyForAttributeType;
-  }
+  const file = pathToFileURL(
+    path.join(__dirname, '../server/src/services/html-to-blocks.ts')
+  ).href;
+  const mod = await import(file);
+  const { htmlToBlocks, formatBodyForAttributeType } = mod;
 
   const html = `
     <h2>Hello</h2>
@@ -50,8 +27,51 @@ async function main() {
   assert.ok(blocks[1].children.some((c) => c.type === 'text' && c.bold));
   assert.equal(blocks[2].type, 'list');
   assert.equal(blocks[2].format, 'unordered');
-  const img = blocks.find((b) => b.type === 'paragraph' && JSON.stringify(b).includes('/uploads/a.jpg'));
+  const img = blocks.find((b) => b.type === 'image');
   assert.ok(img);
+  assert.equal(img.image.url, '/uploads/a.jpg');
+  assert.equal(img.image.alternativeText, 'A');
+
+  // Nested/unknown tags must not leak as text (p></p>, cite>, etc.)
+  const quoteHtml = `
+    <blockquote>
+      <p>Quote body</p>
+      <p></p>
+      <cite>Dr. Mya Ellison</cite>
+    </blockquote>
+  `;
+  const quoteBlocks = htmlToBlocks(quoteHtml);
+  const quote = quoteBlocks.find((b) => b.type === 'quote');
+  assert.ok(quote);
+  const joined = quote.children.map((c) => (c.type === 'text' ? c.text : '')).join('');
+  assert.ok(!/<\/?[a-z]+>/i.test(joined), `tag leak in quote: ${joined}`);
+  assert.ok(!/\bp>\s*\/?p>|\bcite>|\b\/cite>/i.test(joined), `broken tag leak: ${joined}`);
+  assert.ok(joined.includes('Quote body'));
+  assert.ok(joined.includes('Dr. Mya Ellison'));
+  assert.ok(quote.children.some((c) => c.type === 'text' && c.italic && c.text.includes('Dr. Mya')));
+
+  const withMedia = htmlToBlocks(
+    `<p><img src="/uploads/b.png" alt="B" /></p>`,
+    {
+      mediaBySrc: {
+        '/uploads/b.png': {
+          id: 9,
+          url: '/uploads/b.png',
+          name: 'b.png',
+          alternativeText: 'B',
+          width: 100,
+          height: 80,
+          hash: 'b',
+          ext: '.png',
+          mime: 'image/png',
+          size: 12,
+          provider: 'local',
+        },
+      },
+    }
+  );
+  assert.equal(withMedia[0].type, 'image');
+  assert.equal(withMedia[0].image.id, 9);
 
   const asBlocks = formatBodyForAttributeType('<p>Hi</p>', 'blocks');
   assert.ok(Array.isArray(asBlocks));
