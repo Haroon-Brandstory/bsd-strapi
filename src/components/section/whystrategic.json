@@ -1,0 +1,48 @@
+{
+  "collectionName": "components_section_whystrategics",
+  "info": {
+    "displayName": "Why Strategic"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "text"
+    },
+    "para": {
+      "type": "text"
+    },
+    "text1": {
+      "type": "text"
+    },
+    "text2": {
+      "type": "text"
+    },
+    "bottomPara": {
+      "type": "text"
+    },
+    "orangeText": {
+      "type": "text"
+    },
+    "img": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "imageReverse": {
+      "type": "boolean",
+      "default": false
+    },
+    "points": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

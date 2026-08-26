@@ -750,6 +750,9 @@ export interface ApiLocationPageLocationPage
         'section.vertical-tab',
         'section.horizontaltab',
         'section.adv',
+        'section.whystrategic',
+        'section.thepeople',
+        'section.whyaeomatters',
       ]
     >;
     seodescription: Schema.Attribute.String;

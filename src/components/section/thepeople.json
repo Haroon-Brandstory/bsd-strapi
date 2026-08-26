@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_section_thepeoples",
+  "info": {
+    "displayName": "The People"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "text"
+    },
+    "subtext": {
+      "type": "string"
+    },
+    "bottomPara": {
+      "type": "text"
+    },
+    "points": {
+      "type": "component",
+      "component": "element.list",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

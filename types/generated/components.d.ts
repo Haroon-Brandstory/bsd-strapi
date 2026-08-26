@@ -1020,6 +1020,20 @@ export interface SectionTestimonials extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionThepeople extends Struct.ComponentSchema {
+  collectionName: 'components_section_thepeoples';
+  info: {
+    displayName: 'The People';
+  };
+  attributes: {
+    bottomPara: Schema.Attribute.Text;
+    para: Schema.Attribute.Text;
+    points: Schema.Attribute.Component<'element.list', true>;
+    subtext: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface SectionVerticalTab extends Struct.ComponentSchema {
   collectionName: 'components_section_vertical_tabs';
   info: {
@@ -1028,6 +1042,39 @@ export interface SectionVerticalTab extends Struct.ComponentSchema {
   attributes: {
     para: Schema.Attribute.Blocks;
     tabs: Schema.Attribute.Component<'element.tabs', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionWhyaeomatters extends Struct.ComponentSchema {
+  collectionName: 'components_section_whyaeomatters';
+  info: {
+    displayName: 'Why AEO Matters';
+  };
+  attributes: {
+    bottomPara: Schema.Attribute.Blocks;
+    imgcards: Schema.Attribute.Component<'element.imgcard', true>;
+    para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionWhystrategic extends Struct.ComponentSchema {
+  collectionName: 'components_section_whystrategics';
+  info: {
+    displayName: 'Why Strategic';
+  };
+  attributes: {
+    bottomPara: Schema.Attribute.Text;
+    imageAlt: Schema.Attribute.String;
+    imageReverse: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    img: Schema.Attribute.Media<'images'>;
+    orangeText: Schema.Attribute.Text;
+    para: Schema.Attribute.Text;
+    points: Schema.Attribute.Component<'element.list', true>;
+    subtitle: Schema.Attribute.Text;
+    text1: Schema.Attribute.Text;
+    text2: Schema.Attribute.Text;
     title: Schema.Attribute.String;
   };
 }
@@ -1139,7 +1186,10 @@ declare module '@strapi/strapi' {
       'section.section-whythis-worked': SectionSectionWhythisWorked;
       'section.services-sec': SectionServicesSec;
       'section.testimonials': SectionTestimonials;
+      'section.thepeople': SectionThepeople;
       'section.vertical-tab': SectionVerticalTab;
+      'section.whyaeomatters': SectionWhyaeomatters;
+      'section.whystrategic': SectionWhystrategic;
       'section.whyyourpartner': SectionWhyyourpartner;
       'section.yourbrandyourstrategy': SectionYourbrandyourstrategy;
     }
