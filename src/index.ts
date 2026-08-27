@@ -17,10 +17,15 @@ const LOCATION_SEED_FILES = [
   'data/seeds/b2b-performance-marketing-services-new-york.json',
   'data/seeds/b2c-performance-marketing-location-pages.json',
   'data/seeds/brandstory-ai-development-location-pages.json',
+  'data/seeds/brandstory-ai-development-15-us-location-pages-v2.json',
 ];
 
-/** Overwrite existing by fullPath. Keep empty for prod-safe create-only seeding. */
-const LOCATION_UPSERT_FILES = new Set<string>([]);
+/** Overwrite existing by fullPath. Keep empty for prod-safe create-only seeding.
+ * Temporary: v2 AI pages upsert for one prod seed run, then clear this set.
+ */
+const LOCATION_UPSERT_FILES = new Set<string>([
+  'data/seeds/brandstory-ai-development-15-us-location-pages-v2.json',
+]);
 
 /** Blog seed files (create-only unless listed in BLOG_UPSERT_FILES). */
 const BLOG_SEED_FILES: string[] = [];
