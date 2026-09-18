@@ -22,6 +22,7 @@ const LOCATION_SEED_FILES = [
   'data/seeds/brandstory-product-design-15-us-location-pages.json',
   'data/seeds/brandstory-go-to-market-15-us-location-pages.json',
   'data/seeds/brandstory-employer-branding-15-us-location-pages.json',
+  'data/seeds/brandstory-ui-ux-design-15-us-location-pages.json',
 ];
 
 /** Overwrite existing by fullPath. Keep empty for prod-safe create-only seeding. */
