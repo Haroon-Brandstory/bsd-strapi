@@ -32,6 +32,12 @@ Each page must be ready for Strapi Document Service create / seed append into `d
 8. Prefer British spelling when writing Brandstory AEO copy (`optimisation`, `organise`) unless told otherwise.
 9. No guaranteed AI citation / ranking claims.
 10. **Banner title split is wrong** — `section.banner.sectionHeading` = full title (include city). `section.banner.orangeText` = short highlight tagline only (not city name / not title suffix).
+11. **Word counts are hard limits** — each section field map lists a required word range. Output under the minimum or over the maximum is invalid. Rewrite that field before returning JSON.
+    - Count words as whitespace-separated tokens in the visible copy only.
+    - For blocks, join every `text` node, then count. Do not count JSON keys, `__component`, or URLs.
+    - A one-sentence card, bullet, or answer is invalid when the minimum is higher.
+    - The JSON skeleton later in this doc is shape only. Expand every repeatable array to the required count and length.
+    - Before you return JSON, count every ranged field. If any field misses its range, expand or cut that field and count again.
 
 ---
 
@@ -244,6 +250,12 @@ Only these:
 - Do **not** put city name alone in `orangeText` while leaving a truncated title in `sectionHeading` (wrong: `sectionHeading: "… in"`, `orangeText: "New York"`).
 - City belongs inside `sectionHeading` when it is part of the page title.
 
+**Word count (required):**
+- `sectionHeading`: 6–12 words. Full title, city included.
+- `orangeText`: 5–8 words. Tagline only.
+- `bannerPara`: 60–75 words. Under 60 is invalid.
+- `buttons`: exactly 2.
+
 ---
 
 ### 2) `section.whystrategic`
@@ -263,7 +275,15 @@ Only these:
 | `bottomPara` | text | plain text |
 | `img` | media | **OMIT** |
 
-Recommended: 4–6 points.
+**Word count (required):**
+- `title`: 10–16 words.
+- `subtitle`: 22–28 words.
+- `para`: 30–38 words. Plain text.
+- `text1`: 24–32 words.
+- `text2`: 24–32 words.
+- `orangeText`: 6–10 words.
+- `points`: exactly 5. Each `point` 10–14 words.
+- `bottomPara`: 24–32 words.
 
 ---
 
@@ -277,7 +297,11 @@ Recommended: 4–6 points.
 | `imgcards` | `element.imgcard[]` | services |
 | `bottomPara` | blocks | |
 
-Recommended: 5–6 cards. **No `img` keys.**
+**Word count (required):** exactly 6 `imgcards`. **No `img` keys.**
+- `title`: 10–16 words.
+- `para`: 35–45 words.
+- Each card `para`: 32–40 words. Under 32 is invalid.
+- `bottomPara`: 22–28 words.
 
 ---
 
@@ -291,7 +315,11 @@ Recommended: 5–6 cards. **No `img` keys.**
 | `imgcards` | `element.imgcard[]` | reasons |
 | `bottomPara` | blocks | |
 
-Recommended: 3 cards. **No `img` keys.**
+**Word count (required):** exactly 3 `imgcards`. **No `img` keys.**
+- `title`: 6–12 words.
+- `para`: 28–36 words.
+- Each card `para`: 15–20 words. Under 15 is invalid.
+- `bottomPara`: 18–24 words.
 
 ---
 
@@ -306,7 +334,12 @@ Recommended: 3 cards. **No `img` keys.**
 | `card` | `element.card[]` | field name is `card` not `cards` |
 | `bottomPara` | blocks | |
 
-Recommended: 3 cards.
+**Word count (required):** exactly 4 `card` items.
+- `title`: 8–12 words.
+- `para`: 30–36 words.
+- `orangeText`: 5–8 words.
+- Each card `para`: 10–15 words. Under 10 is invalid.
+- `bottomPara`: 20–26 words.
 
 ---
 
@@ -321,7 +354,14 @@ Recommended: 3 cards.
 | `points` | `element.list[]` | |
 | `bottomPara` | text | **plain text** |
 
-Recommended: 4–5 points. No media.
+No media.
+
+**Word count (required):** exactly 5 `points`.
+- `title`: 8–14 words.
+- `para`: 36–44 words. Plain text.
+- `subtext`: 4–6 words.
+- Each `point`: 10–12 words. A job title alone is invalid.
+- `bottomPara`: 18–24 words.
 
 ---
 
@@ -335,7 +375,13 @@ Recommended: 4–5 points. No media.
 | `casestudyCard` | `element.casestudy-card[]` | |
 | `bottomPara` | blocks | |
 
-Recommended: 3 cards. **Omit `image`.**
+**Word count (required):** exactly 3 `casestudyCard` items. **Omit `image`.**
+- `title`: 8–12 words.
+- `para`: 32–38 words.
+- Each `goal`: 16–20 words.
+- Each `solution`: 11–16 words.
+- Each `result`: 14–18 words.
+- `bottomPara`: 18–24 words.
 
 ---
 
@@ -350,7 +396,12 @@ Recommended: 3 cards. **Omit `image`.**
 | `accordion` | `element.accordion[]` | |
 | `bottomPara` | blocks | |
 
-Recommended: 3–4 items.
+**Word count (required):** exactly 4 `accordion` items.
+- `title`: 4–8 words.
+- `orangeText`: 6–10 words.
+- Intro `para`: 28–36 words.
+- Each accordion `para`: 13–18 words. Under 13 is invalid.
+- `bottomPara`: 16–20 words.
 
 ---
 
@@ -363,7 +414,12 @@ Recommended: 3–4 items.
 | `para` | blocks | |
 | `accordion` | `element.accordion[]` | steps |
 
-No `orangeText` / `bottomPara` on this component. Recommended: 4–5 steps.
+No `orangeText` / `bottomPara` on this component.
+
+**Word count (required):** exactly 4 `accordion` steps.
+- `title`: 8–12 words.
+- Intro `para`: 20–26 words.
+- Each step `para`: 13–17 words. Under 13 is invalid.
 
 ---
 
@@ -375,7 +431,9 @@ No `orangeText` / `bottomPara` on this component. Recommended: 4–5 steps.
 | `title` | string | |
 | `cards` | `element.card1[]` | |
 
-Recommended: 3 cards. Optional `bgcolor`. **Omit `img`.**
+**Word count (required):** exactly 3 `cards`. Optional `bgcolor`. **Omit `img`.**
+- `title`: 8–14 words.
+- Each card `para`: 13–20 words. Under 13 is invalid.
 
 Suggested bgcolors: `#FFF5EE`, `#F0F7FF`, `#F5FFF0`.
 
@@ -391,7 +449,11 @@ Suggested bgcolors: `#FFF5EE`, `#F0F7FF`, `#F5FFF0`.
 | `cards` | `element.card1[]` | |
 | `bottomPara` | blocks | |
 
-Recommended: 3 cards. **Omit `img`.**
+**Word count (required):** exactly 3 `cards`. **Omit `img`.**
+- `title`: 10–16 words.
+- `para`: 24–30 words.
+- Each card `para`: 15–20 words. Under 15 is invalid.
+- `bottomPara`: 22–28 words.
 
 ---
 
@@ -404,7 +466,10 @@ Recommended: 3 cards. **Omit `img`.**
 | `para` | blocks | |
 | `tabs` | `element.tabs[]` | |
 
-Recommended: 3–4 tabs.
+**Word count (required):** exactly 4 `tabs`.
+- `title`: 6–12 words.
+- Intro `para`: 15–20 words.
+- Each tab `para`: 12–16 words. Under 12 is invalid. Over 60 is invalid.
 
 ---
 
@@ -417,7 +482,10 @@ Recommended: 3–4 tabs.
 | `description` | blocks | note field name `description` not `para` |
 | `tabs` | `element.tabs[]` | industries |
 
-Recommended: 3–4 industries localised to city.
+**Word count (required):** exactly 4 `tabs`, localised to the city.
+- `title`: 8–12 words.
+- `description`: 24–30 words.
+- Each tab `para`: 10–14 words. Under 10 is invalid. Over 30 is invalid.
 
 ---
 
@@ -429,7 +497,9 @@ Recommended: 3–4 industries localised to city.
 | `title` | string | |
 | `testimonials` | `element.testimonials[]` | |
 
-Recommended: 2–3 quotes.
+**Word count (required):** exactly 2 or 3 quotes.
+- `title`: 3–8 words.
+- Each `review`: 18–35 words. Under 18 is invalid.
 
 ---
 
@@ -441,7 +511,11 @@ Recommended: 2–3 quotes.
 | `title` | string | |
 | `faq` | `element.faq[]` | |
 
-Recommended: 5 FAQs. Include one that says AI citations cannot be guaranteed.
+**Word count (required):** exactly 5 `faq` items.
+- `title`: 8–12 words.
+- Each `question`: 6–12 words.
+- Each `answer`: 24–32 words. Under 24 is invalid.
+- One answer must say results or citations cannot be guaranteed.
 
 ---
 
@@ -458,6 +532,11 @@ Recommended: 5 FAQs. Include one that says AI citations cannot be guaranteed.
 | `button2Url` | string | |
 
 Typical URLs: `/contact`, `/services`.
+
+**Word count (required):**
+- `title`: 8–14 words.
+- `para`: 40–48 words. Under 40 is invalid.
+- Exactly 2 buttons (`button1*` and `button2*`).
 
 ---
 
@@ -819,6 +898,8 @@ Typical URLs: `/contact`, `/services`.
 | New `__component` values | Not allowed |
 | Duplicate `fullPath` | Must be unique |
 | Leading `/` in `fullPath` | Use `aeo-services-city` not `/aeo-services-city` |
+| Body copy under the listed minimum | Invalid. Expand that field and recount before returning JSON |
+| One-sentence service card or FAQ answer | Invalid when the field minimum is higher |
 
 ---
 
