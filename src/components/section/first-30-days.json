@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_section_first_30_days",
+  "info": {
+    "displayName": "first30Days"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "weeks": {
+      "type": "component",
+      "component": "element.week-item",
+      "repeatable": true
+    },
+    "outcomeLabel": {
+      "type": "string"
+    },
+    "outcomeText": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_element_slide_items",
+  "info": {
+    "displayName": "slideItem"
+  },
+  "options": {},
+  "attributes": {
+    "number": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    }
+  },
+  "config": {}
+}

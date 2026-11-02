@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_section_our_processes",
+  "info": {
+    "displayName": "ourProcess"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "buttons": {
+      "type": "component",
+      "component": "element.button",
+      "repeatable": true
+    },
+    "steps": {
+      "type": "component",
+      "component": "element.steps",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

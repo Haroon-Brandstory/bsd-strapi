@@ -172,6 +172,18 @@ export interface ElementFaq extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementFeatureCard extends Struct.ComponentSchema {
+  collectionName: 'components_element_feature_cards';
+  info: {
+    displayName: 'featureCard';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.Media<'images'>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface ElementHighlights extends Struct.ComponentSchema {
   collectionName: 'components_element_highlights';
   info: {
@@ -202,6 +214,21 @@ export interface ElementImpactItems extends Struct.ComponentSchema {
   attributes: {
     description: Schema.Attribute.String;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface ElementIndustryResultCard extends Struct.ComponentSchema {
+  collectionName: 'components_element_industry_result_cards';
+  info: {
+    displayName: 'industryResultCard';
+  };
+  attributes: {
+    buttonLabel: Schema.Attribute.String;
+    buttonUrl: Schema.Attribute.String;
+    industry: Schema.Attribute.String;
+    metric: Schema.Attribute.String;
+    metricLabel: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
   };
 }
 
@@ -261,6 +288,29 @@ export interface ElementResultImpact extends Struct.ComponentSchema {
   };
 }
 
+export interface ElementReviewCard extends Struct.ComponentSchema {
+  collectionName: 'components_element_review_cards';
+  info: {
+    displayName: 'reviewCard';
+  };
+  attributes: {
+    authorName: Schema.Attribute.String;
+    avatar: Schema.Attribute.Media<'images'>;
+    platformIcon: Schema.Attribute.Media<'images'>;
+    rating: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<5>;
+    review: Schema.Attribute.Text;
+    reviewDate: Schema.Attribute.String;
+  };
+}
+
 export interface ElementServicesInclude extends Struct.ComponentSchema {
   collectionName: 'components_element_services_includes';
   info: {
@@ -268,6 +318,30 @@ export interface ElementServicesInclude extends Struct.ComponentSchema {
   };
   attributes: {
     service: Schema.Attribute.String;
+  };
+}
+
+export interface ElementSlideItem extends Struct.ComponentSchema {
+  collectionName: 'components_element_slide_items';
+  info: {
+    displayName: 'slideItem';
+  };
+  attributes: {
+    number: Schema.Attribute.String;
+    orangeText: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface ElementStatItem extends Struct.ComponentSchema {
+  collectionName: 'components_element_stat_items';
+  info: {
+    displayName: 'statItem';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    value: Schema.Attribute.String;
   };
 }
 
@@ -324,6 +398,20 @@ export interface ElementTestimonials extends Struct.ComponentSchema {
     author: Schema.Attribute.String;
     position: Schema.Attribute.String;
     review: Schema.Attribute.Text;
+  };
+}
+
+export interface ElementWeekItem extends Struct.ComponentSchema {
+  collectionName: 'components_element_week_items';
+  info: {
+    displayName: 'weekItem';
+  };
+  attributes: {
+    icon: Schema.Attribute.Media<'images'>;
+    label: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    theme: Schema.Attribute.Enumeration<['red', 'yellow', 'blue', 'green']>;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -754,6 +842,21 @@ export interface SectionBanner extends Struct.ComponentSchema {
     buttons: Schema.Attribute.Component<'element.button', true>;
     orangeText: Schema.Attribute.String;
     sectionHeading: Schema.Attribute.String;
+    stats: Schema.Attribute.Component<'element.stat-item', true>;
+  };
+}
+
+export interface SectionCardSlider extends Struct.ComponentSchema {
+  collectionName: 'components_section_card_sliders';
+  info: {
+    displayName: 'cardSlider';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    orangeText: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    slides: Schema.Attribute.Component<'element.slide-item', true>;
+    title: Schema.Attribute.String;
   };
 }
 
@@ -886,6 +989,17 @@ export interface SectionCasestudysections extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionClientLogos extends Struct.ComponentSchema {
+  collectionName: 'components_section_client_logos';
+  info: {
+    displayName: 'clientLogos';
+  };
+  attributes: {
+    logos: Schema.Attribute.Media<'images', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface SectionFaq extends Struct.ComponentSchema {
   collectionName: 'components_section_faqs';
   info: {
@@ -894,6 +1008,22 @@ export interface SectionFaq extends Struct.ComponentSchema {
   attributes: {
     faq: Schema.Attribute.Component<'element.faq', true>;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionFirst30Days extends Struct.ComponentSchema {
+  collectionName: 'components_section_first_30_days';
+  info: {
+    displayName: 'first30Days';
+  };
+  attributes: {
+    label: Schema.Attribute.String;
+    orangeText: Schema.Attribute.String;
+    outcomeLabel: Schema.Attribute.String;
+    outcomeText: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+    weeks: Schema.Attribute.Component<'element.week-item', true>;
   };
 }
 
@@ -969,6 +1099,34 @@ export interface SectionIndResults extends Struct.ComponentSchema {
   };
 }
 
+export interface SectionIndustryResults extends Struct.ComponentSchema {
+  collectionName: 'components_section_industry_results';
+  info: {
+    displayName: 'industryResults';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'element.industry-result-card', true>;
+    orangeText: Schema.Attribute.String;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionOurProcess extends Struct.ComponentSchema {
+  collectionName: 'components_section_our_processes';
+  info: {
+    displayName: 'ourProcess';
+  };
+  attributes: {
+    buttons: Schema.Attribute.Component<'element.button', true>;
+    label: Schema.Attribute.String;
+    orangeText: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    steps: Schema.Attribute.Component<'element.steps', true>;
+    title: Schema.Attribute.String;
+  };
+}
+
 export interface SectionOutcome extends Struct.ComponentSchema {
   collectionName: 'components_section_outcomes';
   info: {
@@ -980,6 +1138,27 @@ export interface SectionOutcome extends Struct.ComponentSchema {
     orangeText: Schema.Attribute.String;
     para: Schema.Attribute.Blocks;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionReviewsCta extends Struct.ComponentSchema {
+  collectionName: 'components_section_reviews_ctas';
+  info: {
+    displayName: 'reviewsCta';
+  };
+  attributes: {
+    ctaButtonLabel: Schema.Attribute.String;
+    ctaButtonUrl: Schema.Attribute.String;
+    ctaImage: Schema.Attribute.Media<'images'>;
+    ctaImageAlt: Schema.Attribute.String;
+    ctaOrangeText: Schema.Attribute.String;
+    ctaPara: Schema.Attribute.Blocks;
+    ctaTitle: Schema.Attribute.String;
+    ratingLabel: Schema.Attribute.String;
+    ratingValue: Schema.Attribute.String;
+    reviews: Schema.Attribute.Component<'element.review-card', true>;
+    reviewsCount: Schema.Attribute.String;
+    reviewsCountLabel: Schema.Attribute.String;
   };
 }
 
@@ -1006,6 +1185,26 @@ export interface SectionServicesSec extends Struct.ComponentSchema {
     imgcards: Schema.Attribute.Component<'element.imgcard', true>;
     para: Schema.Attribute.Blocks;
     title: Schema.Attribute.String;
+  };
+}
+
+export interface SectionTeamPerformance extends Struct.ComponentSchema {
+  collectionName: 'components_section_team_performances';
+  info: {
+    displayName: 'teamPerformance';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'element.feature-card', true>;
+    footerNote: Schema.Attribute.Text;
+    footerOrangeText: Schema.Attribute.String;
+    footerText: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    label: Schema.Attribute.String;
+    orangeText: Schema.Attribute.String;
+    para: Schema.Attribute.Blocks;
+    title: Schema.Attribute.String;
+    titleSuffix: Schema.Attribute.String;
   };
 }
 
@@ -1121,20 +1320,26 @@ declare module '@strapi/strapi' {
       'element.cells': ElementCells;
       'element.example': ElementExample;
       'element.faq': ElementFaq;
+      'element.feature-card': ElementFeatureCard;
       'element.highlights': ElementHighlights;
       'element.imgcard': ElementImgcard;
       'element.impact-items': ElementImpactItems;
+      'element.industry-result-card': ElementIndustryResultCard;
       'element.list': ElementList;
       'element.list-card': ElementListCard;
       'element.metric-points': ElementMetricPoints;
       'element.rep-recommendations': ElementRepRecommendations;
       'element.result-impact': ElementResultImpact;
+      'element.review-card': ElementReviewCard;
       'element.services-include': ElementServicesInclude;
+      'element.slide-item': ElementSlideItem;
+      'element.stat-item': ElementStatItem;
       'element.steps': ElementSteps;
       'element.table-heading': ElementTableHeading;
       'element.table-row': ElementTableRow;
       'element.tabs': ElementTabs;
       'element.testimonials': ElementTestimonials;
+      'element.week-item': ElementWeekItem;
       'industry-reports.adoption-cards': IndustryReportsAdoptionCards;
       'industry-reports.aeo-geo-card': IndustryReportsAeoGeoCard;
       'industry-reports.benchmark-card': IndustryReportsBenchmarkCard;
@@ -1165,6 +1370,7 @@ declare module '@strapi/strapi' {
       'section.accordion2': SectionAccordion2;
       'section.adv': SectionAdv;
       'section.banner': SectionBanner;
+      'section.card-slider': SectionCardSlider;
       'section.case-approach': SectionCaseApproach;
       'section.case-banner': SectionCaseBanner;
       'section.case-challenge': SectionCaseChallenge;
@@ -1175,16 +1381,22 @@ declare module '@strapi/strapi' {
       'section.case-results': SectionCaseResults;
       'section.casestudy': SectionCasestudy;
       'section.casestudysections': SectionCasestudysections;
+      'section.client-logos': SectionClientLogos;
       'section.faq': SectionFaq;
+      'section.first-30-days': SectionFirst30Days;
       'section.horizontaltab': SectionHorizontaltab;
       'section.ind-banner': SectionIndBanner;
       'section.ind-digital-marketing': SectionIndDigitalMarketing;
       'section.ind-growth': SectionIndGrowth;
       'section.ind-objectives': SectionIndObjectives;
       'section.ind-results': SectionIndResults;
+      'section.industry-results': SectionIndustryResults;
+      'section.our-process': SectionOurProcess;
       'section.outcome': SectionOutcome;
+      'section.reviews-cta': SectionReviewsCta;
       'section.section-whythis-worked': SectionSectionWhythisWorked;
       'section.services-sec': SectionServicesSec;
+      'section.team-performance': SectionTeamPerformance;
       'section.testimonials': SectionTestimonials;
       'section.thepeople': SectionThepeople;
       'section.vertical-tab': SectionVerticalTab;

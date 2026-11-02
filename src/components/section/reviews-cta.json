@@ -1,0 +1,50 @@
+{
+  "collectionName": "components_section_reviews_ctas",
+  "info": {
+    "displayName": "reviewsCta"
+  },
+  "options": {},
+  "attributes": {
+    "ratingValue": {
+      "type": "string"
+    },
+    "ratingLabel": {
+      "type": "string"
+    },
+    "reviewsCount": {
+      "type": "string"
+    },
+    "reviewsCountLabel": {
+      "type": "string"
+    },
+    "reviews": {
+      "type": "component",
+      "component": "element.review-card",
+      "repeatable": true
+    },
+    "ctaTitle": {
+      "type": "string"
+    },
+    "ctaOrangeText": {
+      "type": "string"
+    },
+    "ctaPara": {
+      "type": "blocks"
+    },
+    "ctaButtonLabel": {
+      "type": "string"
+    },
+    "ctaButtonUrl": {
+      "type": "string"
+    },
+    "ctaImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "ctaImageAlt": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_element_review_cards",
+  "info": {
+    "displayName": "reviewCard"
+  },
+  "options": {},
+  "attributes": {
+    "avatar": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "authorName": {
+      "type": "string"
+    },
+    "reviewDate": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "integer",
+      "min": 1,
+      "max": 5,
+      "default": 5
+    },
+    "review": {
+      "type": "text"
+    },
+    "platformIcon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  },
+  "config": {}
+}

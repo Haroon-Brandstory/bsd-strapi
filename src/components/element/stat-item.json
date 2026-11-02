@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_element_stat_items",
+  "info": {
+    "displayName": "statItem"
+  },
+  "options": {},
+  "attributes": {
+    "value": {
+      "type": "string"
+    },
+    "label": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}

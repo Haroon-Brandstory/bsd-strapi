@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_element_week_items",
+  "info": {
+    "displayName": "weekItem"
+  },
+  "options": {},
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "theme": {
+      "type": "enumeration",
+      "enum": ["red", "yellow", "blue", "green"]
+    },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  },
+  "config": {}
+}

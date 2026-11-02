@@ -18,6 +18,11 @@
       "type": "component",
       "component": "element.button",
       "repeatable": true
+    },
+    "stats": {
+      "type": "component",
+      "component": "element.stat-item",
+      "repeatable": true
     }
   },
   "config": {}

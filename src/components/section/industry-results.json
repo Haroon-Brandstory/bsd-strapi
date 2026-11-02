@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_section_industry_results",
+  "info": {
+    "displayName": "industryResults"
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "orangeText": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "cards": {
+      "type": "component",
+      "component": "element.industry-result-card",
+      "repeatable": true
+    }
+  },
+  "config": {}
+}

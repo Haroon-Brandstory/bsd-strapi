@@ -753,6 +753,13 @@ export interface ApiLocationPageLocationPage
         'section.whystrategic',
         'section.thepeople',
         'section.whyaeomatters',
+        'section.client-logos',
+        'section.our-process',
+        'section.card-slider',
+        'section.first-30-days',
+        'section.industry-results',
+        'section.team-performance',
+        'section.reviews-cta',
       ]
     >;
     seodescription: Schema.Attribute.String;

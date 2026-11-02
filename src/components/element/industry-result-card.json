@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_element_industry_result_cards",
+  "info": {
+    "displayName": "industryResultCard"
+  },
+  "options": {},
+  "attributes": {
+    "metric": {
+      "type": "string"
+    },
+    "metricLabel": {
+      "type": "string"
+    },
+    "para": {
+      "type": "blocks"
+    },
+    "industry": {
+      "type": "string"
+    },
+    "buttonLabel": {
+      "type": "string"
+    },
+    "buttonUrl": {
+      "type": "string"
+    }
+  },
+  "config": {}
+}
