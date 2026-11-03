@@ -130,3 +130,10 @@ dist
 build
 .strapi-updater.json
 .strapi-cloud.json
+
+############################
+# Local development helpers
+############################
+
+scripts/
+.env.bak
