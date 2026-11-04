@@ -137,3 +137,7 @@ build
 
 scripts/
 .env.bak
+
+.vscode
+
+dumps/
