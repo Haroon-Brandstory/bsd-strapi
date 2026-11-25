@@ -497,7 +497,7 @@ export interface ApiBlogBlog extends Struct.CollectionTypeSchema {
     blogTitle: Schema.Attribute.Text;
     brandstorySyncId: Schema.Attribute.String & Schema.Attribute.Unique;
     contentSection: Schema.Attribute.DynamicZone<
-      ['element.blog-content', 'element.blog-image']
+      ['element.blog-content', 'element.blog-image', 'industry-reports.table']
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

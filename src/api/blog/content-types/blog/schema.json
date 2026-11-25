@@ -40,7 +40,8 @@
       "type": "dynamiczone",
       "components": [
         "element.blog-content",
-        "element.blog-image"
+        "element.blog-image",
+        "industry-reports.table"
       ]
     },
     "blogQuote": {
